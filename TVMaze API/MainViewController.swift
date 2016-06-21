@@ -7,6 +7,8 @@
 //
 
 import UIKit
+import Alamofire
+import AlamofireImage
 
 class MainViewController: UIViewController, UITableViewDelegate, UITableViewDataSource {
     
@@ -16,26 +18,71 @@ class MainViewController: UIViewController, UITableViewDelegate, UITableViewData
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        // Do any additional setup after loading the view, typically from a nib.
+        self.getShows()
     }
 
     override func didReceiveMemoryWarning() {
         super.didReceiveMemoryWarning()
-        // Dispose of any resources that can be recreated.
     }
     
-    func numberOfSections(in tableView: UITableView) -> Int {
+    func getShows() {
+        Alamofire.request(.GET, baseUrl + showsUrl, encoding: .JSON).responseJSON {
+            response in switch response.result {
+            case .Success(let JSON):
+                for show in (JSON as! NSArray) {
+                    let showID      = show.objectForKey("id") as! Int
+                    let showName    = show.objectForKey("name") as! String
+                    let showImageM  = show.objectForKey("image")!.objectForKey("medium") as! String
+                    let showImageO  = show.objectForKey("image")!.objectForKey("original") as! String
+                    
+                }
+            case .Failure(let error):
+                print("Request failed with error: \(error)")
+            }
+        }
+    }
+    
+    func numberOfSectionsInTableView(tableView: UITableView) -> Int {
         return 1
     }
     
-    func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        let cell = tableView.dequeueReusableCell(withIdentifier: cellIdentifier, for: indexPath) as! MainTableViewCell
-        cell.lblTitle.text = "teste"
+    func tableView(tableView: UITableView, cellForRowAtIndexPath indexPath: NSIndexPath) -> UITableViewCell {
+        let cell = tableView.dequeueReusableCellWithIdentifier(cellIdentifier, forIndexPath: indexPath) as! MainTableViewCell
+        cell.lblTitle.text = baseUrl
         return cell
     }
     
-    func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
+    func tableView(tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         return 10
+    }
+    
+    func createLoading() {
+        let currentWindow = UIApplication.sharedApplication().keyWindow
+        let visualEffectView = UIVisualEffectView(effect: UIBlurEffect(style: .Dark))
+        visualEffectView.frame = self.view.bounds
+        visualEffectView.tag = 1
+        if (currentWindow!.viewWithTag(1) == nil) {
+            currentWindow?.addSubview(visualEffectView)
+        }
+        
+        let spinner = UIActivityIndicatorView()
+        spinner.center = self.view.center
+        spinner.activityIndicatorViewStyle = .WhiteLarge
+        spinner.startAnimating()
+        spinner.tag = 2
+        if (currentWindow!.viewWithTag(2) == nil) {
+            currentWindow?.addSubview(spinner)
+        }
+    }
+    
+    func removeLoading() {
+        let currentWindow = UIApplication.sharedApplication().keyWindow
+        if (currentWindow!.viewWithTag(1) != nil) {
+            currentWindow!.viewWithTag(1)!.removeFromSuperview()
+        }
+        if (currentWindow!.viewWithTag(2) != nil) {
+            currentWindow!.viewWithTag(2)!.removeFromSuperview()
+        }
     }
 }
 

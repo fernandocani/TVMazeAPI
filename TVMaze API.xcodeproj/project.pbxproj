@@ -17,6 +17,7 @@
 		EDCF70AF1D194E0D00E5FFB5 /* Alamofire.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = EDCF70A01D1941ED00E5FFB5 /* Alamofire.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		EDCF70CC1D194E6600E5FFB5 /* AlamofireImage.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = EDCF70BF1D194E5900E5FFB5 /* AlamofireImage.framework */; };
 		EDCF70CD1D194E6600E5FFB5 /* AlamofireImage.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = EDCF70BF1D194E5900E5FFB5 /* AlamofireImage.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
+		EDCF70D11D19514200E5FFB5 /* Constants.swift in Sources */ = {isa = PBXBuildFile; fileRef = EDCF70D01D19514200E5FFB5 /* Constants.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -160,6 +161,7 @@
 		ED06E9AD1D192826007631C6 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		EDCF70951D1941ED00E5FFB5 /* Alamofire.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = Alamofire.xcodeproj; path = "TVMaze API/Pods/Alamofire/Alamofire.xcodeproj"; sourceTree = "<group>"; };
 		EDCF70B31D194E5900E5FFB5 /* AlamofireImage.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = AlamofireImage.xcodeproj; path = "TVMaze API/Pods/AlamofireImage/AlamofireImage.xcodeproj"; sourceTree = "<group>"; };
+		EDCF70D01D19514200E5FFB5 /* Constants.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Constants.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -223,6 +225,7 @@
 			isa = PBXGroup;
 			children = (
 				ED06E99E1D192826007631C6 /* AppDelegate.swift */,
+				EDCF70D01D19514200E5FFB5 /* Constants.swift */,
 				ED06E9A81D192826007631C6 /* Assets.xcassets */,
 				ED06E9AD1D192826007631C6 /* Info.plist */,
 				ED06E9A51D192826007631C6 /* TVMaze_API.xcdatamodeld */,
@@ -457,6 +460,7 @@
 				ED06E9A71D192826007631C6 /* TVMaze_API.xcdatamodeld in Sources */,
 				ED06E9A11D192826007631C6 /* MainViewController.swift in Sources */,
 				ED06E99F1D192826007631C6 /* AppDelegate.swift in Sources */,
+				EDCF70D11D19514200E5FFB5 /* Constants.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
