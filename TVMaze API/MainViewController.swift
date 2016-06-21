@@ -12,13 +12,18 @@ import AlamofireImage
 
 class MainViewController: UIViewController, UITableViewDelegate, UITableViewDataSource {
     
-    let cellIdentifier = "mainCell"
-    
     @IBOutlet weak var tableView: UITableView!
+    
+    let cellIdentifier = "mainCell"
+    var shows = NSMutableArray()
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        self.getShows()
+        if DataStore.sharedInstance.hasShow() {
+            self.populateArray()
+        } else {
+            self.getShows()
+        }
     }
 
     override func didReceiveMemoryWarning() {
@@ -26,20 +31,32 @@ class MainViewController: UIViewController, UITableViewDelegate, UITableViewData
     }
     
     func getShows() {
+        self.createLoading()
         Alamofire.request(.GET, baseUrl + showsUrl, encoding: .JSON).responseJSON {
             response in switch response.result {
             case .Success(let JSON):
                 for show in (JSON as! NSArray) {
-                    let showID      = show.objectForKey("id") as! Int
-                    let showName    = show.objectForKey("name") as! String
-                    let showImageM  = show.objectForKey("image")!.objectForKey("medium") as! String
-                    let showImageO  = show.objectForKey("image")!.objectForKey("original") as! String
-                    
+                    let id      = String(show.objectForKey("id") as! Int)
+                    let name    = show.objectForKey("name") as! String
+                    let summary = show.objectForKey("summary") as! String
+                    let imageM  = show.objectForKey("image")!.objectForKey("medium") as! String
+                    let imageO  = show.objectForKey("image")!.objectForKey("original") as! String
+                    if DataStore.sharedInstance.createShow(id, name: name, summary: summary, imageM: imageM, imageO: imageO) {
+                        print("Salvouuu")
+                    }
                 }
+                self.populateArray()
             case .Failure(let error):
                 print("Request failed with error: \(error)")
             }
         }
+    }
+    
+    func populateArray() {
+        shows = DataStore.sharedInstance.getShows()
+        
+        self.tableView.reloadData()
+        self.removeLoading()
     }
     
     func numberOfSectionsInTableView(tableView: UITableView) -> Int {
@@ -48,12 +65,17 @@ class MainViewController: UIViewController, UITableViewDelegate, UITableViewData
     
     func tableView(tableView: UITableView, cellForRowAtIndexPath indexPath: NSIndexPath) -> UITableViewCell {
         let cell = tableView.dequeueReusableCellWithIdentifier(cellIdentifier, forIndexPath: indexPath) as! MainTableViewCell
-        cell.lblTitle.text = baseUrl
+        cell.lblTitle.text = (shows.objectAtIndex(indexPath.row) as! Show).name!
+        let summary = (shows.objectAtIndex(indexPath.row) as! Show).summary!
+        let regex = try! NSRegularExpression(pattern: "<.*?>", options: [.CaseInsensitive])
+        let summaryFixed: String = regex.stringByReplacingMatchesInString(summary, options: [], range: NSMakeRange(0, summary.characters.count), withTemplate: "")
+        cell.lblSummary.text = summaryFixed
+        cell.imgHeader.af_setImageWithURL(NSURL(string: (shows.objectAtIndex(indexPath.row) as! Show).imageM!)!)
         return cell
     }
     
     func tableView(tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return 10
+        return shows.count
     }
     
     func createLoading() {
@@ -90,5 +112,5 @@ class MainTableViewCell: UITableViewCell {
     
     @IBOutlet weak var imgHeader:   UIImageView!
     @IBOutlet weak var lblTitle:    UILabel!
-    
+    @IBOutlet weak var lblSummary:  UILabel!
 }

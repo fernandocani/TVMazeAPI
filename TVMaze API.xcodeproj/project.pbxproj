@@ -13,6 +13,8 @@
 		ED06E9A71D192826007631C6 /* TVMaze_API.xcdatamodeld in Sources */ = {isa = PBXBuildFile; fileRef = ED06E9A51D192826007631C6 /* TVMaze_API.xcdatamodeld */; };
 		ED06E9A91D192826007631C6 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = ED06E9A81D192826007631C6 /* Assets.xcassets */; };
 		ED06E9AC1D192826007631C6 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = ED06E9AA1D192826007631C6 /* LaunchScreen.storyboard */; };
+		ED19C5561D195C7300CFC27E /* Show.swift in Sources */ = {isa = PBXBuildFile; fileRef = ED19C5551D195C7300CFC27E /* Show.swift */; };
+		ED19C5641D195CE800CFC27E /* DataStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = ED19C5631D195CE800CFC27E /* DataStore.swift */; };
 		EDCF70AE1D194E0D00E5FFB5 /* Alamofire.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = EDCF70A01D1941ED00E5FFB5 /* Alamofire.framework */; };
 		EDCF70AF1D194E0D00E5FFB5 /* Alamofire.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = EDCF70A01D1941ED00E5FFB5 /* Alamofire.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		EDCF70CC1D194E6600E5FFB5 /* AlamofireImage.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = EDCF70BF1D194E5900E5FFB5 /* AlamofireImage.framework */; };
@@ -159,6 +161,8 @@
 		ED06E9A81D192826007631C6 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		ED06E9AB1D192826007631C6 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
 		ED06E9AD1D192826007631C6 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		ED19C5551D195C7300CFC27E /* Show.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Show.swift; sourceTree = "<group>"; };
+		ED19C5631D195CE800CFC27E /* DataStore.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DataStore.swift; sourceTree = "<group>"; };
 		EDCF70951D1941ED00E5FFB5 /* Alamofire.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = Alamofire.xcodeproj; path = "TVMaze API/Pods/Alamofire/Alamofire.xcodeproj"; sourceTree = "<group>"; };
 		EDCF70B31D194E5900E5FFB5 /* AlamofireImage.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = AlamofireImage.xcodeproj; path = "TVMaze API/Pods/AlamofireImage/AlamofireImage.xcodeproj"; sourceTree = "<group>"; };
 		EDCF70D01D19514200E5FFB5 /* Constants.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Constants.swift; sourceTree = "<group>"; };
@@ -229,6 +233,8 @@
 				ED06E9A81D192826007631C6 /* Assets.xcassets */,
 				ED06E9AD1D192826007631C6 /* Info.plist */,
 				ED06E9A51D192826007631C6 /* TVMaze_API.xcdatamodeld */,
+				ED19C5551D195C7300CFC27E /* Show.swift */,
+				ED19C5631D195CE800CFC27E /* DataStore.swift */,
 			);
 			name = Model;
 			sourceTree = "<group>";
@@ -460,6 +466,8 @@
 				ED06E9A71D192826007631C6 /* TVMaze_API.xcdatamodeld in Sources */,
 				ED06E9A11D192826007631C6 /* MainViewController.swift in Sources */,
 				ED06E99F1D192826007631C6 /* AppDelegate.swift in Sources */,
+				ED19C5561D195C7300CFC27E /* Show.swift in Sources */,
+				ED19C5641D195CE800CFC27E /* DataStore.swift in Sources */,
 				EDCF70D11D19514200E5FFB5 /* Constants.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
