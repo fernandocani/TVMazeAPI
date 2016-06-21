@@ -8,7 +8,7 @@
 
 /* Begin PBXBuildFile section */
 		ED06E99F1D192826007631C6 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = ED06E99E1D192826007631C6 /* AppDelegate.swift */; };
-		ED06E9A11D192826007631C6 /* ViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = ED06E9A01D192826007631C6 /* ViewController.swift */; };
+		ED06E9A11D192826007631C6 /* MainViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = ED06E9A01D192826007631C6 /* MainViewController.swift */; };
 		ED06E9A41D192826007631C6 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = ED06E9A21D192826007631C6 /* Main.storyboard */; };
 		ED06E9A71D192826007631C6 /* TVMaze_API.xcdatamodeld in Sources */ = {isa = PBXBuildFile; fileRef = ED06E9A51D192826007631C6 /* TVMaze_API.xcdatamodeld */; };
 		ED06E9A91D192826007631C6 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = ED06E9A81D192826007631C6 /* Assets.xcassets */; };
@@ -18,7 +18,7 @@
 /* Begin PBXFileReference section */
 		ED06E99B1D192826007631C6 /* TVMaze API.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "TVMaze API.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 		ED06E99E1D192826007631C6 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
-		ED06E9A01D192826007631C6 /* ViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ViewController.swift; sourceTree = "<group>"; };
+		ED06E9A01D192826007631C6 /* MainViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MainViewController.swift; sourceTree = "<group>"; };
 		ED06E9A31D192826007631C6 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/Main.storyboard; sourceTree = "<group>"; };
 		ED06E9A61D192826007631C6 /* TVMaze_API.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = TVMaze_API.xcdatamodel; sourceTree = "<group>"; };
 		ED06E9A81D192826007631C6 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
@@ -66,7 +66,7 @@
 		EDCF70921D19350200E5FFB5 /* Controller */ = {
 			isa = PBXGroup;
 			children = (
-				ED06E9A01D192826007631C6 /* ViewController.swift */,
+				ED06E9A01D192826007631C6 /* MainViewController.swift */,
 			);
 			name = Controller;
 			sourceTree = "<group>";
@@ -164,7 +164,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				ED06E9A71D192826007631C6 /* TVMaze_API.xcdatamodeld in Sources */,
-				ED06E9A11D192826007631C6 /* ViewController.swift in Sources */,
+				ED06E9A11D192826007631C6 /* MainViewController.swift in Sources */,
 				ED06E99F1D192826007631C6 /* AppDelegate.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
