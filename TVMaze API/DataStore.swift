@@ -20,21 +20,21 @@ class DataStore {
     }
     
     func createShow(
-        id:     String,
-        name:   String,
-        summary: String,
-        imageM: String,
-        imageO: String
+        id:         Int,
+        name:       String,
+        summary:    String,
+        imageM:     String,
+        imageO:     String
         ) -> Bool {
         
         let ShowEntity = NSEntityDescription.entityForName("DBShow", inManagedObjectContext: managedContext)
         let show = DBShow(entity: ShowEntity!, insertIntoManagedObjectContext: managedContext)
         
-        show.id     = id
-        show.name   = name
-        show.summary = summary
-        show.imageM = imageM
-        show.imageO = imageO
+        show.id         = id
+        show.name       = name
+        show.summary    = summary
+        show.imageM     = imageM
+        show.imageO     = imageO
         
         (try! managedContext.save())
         return true
@@ -63,22 +63,37 @@ class DataStore {
     
     func getShows() -> NSMutableArray {
         let request = NSFetchRequest(entityName: "DBShow")
-        let sort = NSSortDescriptor(key: "name", ascending: true, selector: #selector(NSString.localizedStandardCompare))
-        request.sortDescriptors = [sort]
+//        let sort = NSSortDescriptor(key: "name", ascending: true, selector: #selector(NSString.localizedStandardCompare))
+//        request.sortDescriptors = [sort]
         let objects: [AnyObject]?
         objects = (try! managedContext.executeFetchRequest(request))
         let result = NSMutableArray()
         for item in objects! {
-            let show    = Show()
-            show.id     = (item as! DBShow).id!
-            show.name   = (item as! DBShow).name!
-            show.summary = (item as! DBShow).summary!
-            show.imageM = (item as! DBShow).imageM!
-            show.imageO = (item as! DBShow).imageO!
+            let show        = Show()
+            show.id         = Int((item as! DBShow).id!)
+            show.name       = (item as! DBShow).name!
+            show.summary    = (item as! DBShow).summary!
+            show.imageM     = (item as! DBShow).imageM!
+            show.imageO     = (item as! DBShow).imageO!
             result.addObject(show)
         }
         return result
     }
+    
+    func getShowByID(id: String) -> Show! {
+        let request = NSFetchRequest(entityName: "DBShow")
+        request.predicate = NSPredicate(format: "id contains[c] %@", id)
+        let objects: [AnyObject]?
+        objects = (try! managedContext.executeFetchRequest(request))
+        let show = Show()
+        show.id         = Int((objects!.first as! DBShow).id!)
+        show.name       = (objects!.first as! DBShow).name
+        show.summary    = (objects!.first as! DBShow).summary
+        show.imageM     = (objects!.first as! DBShow).imageM
+        show.imageO     = (objects!.first as! DBShow).imageO
+        return show
+    }
+
     
 //    func updateCharacter(
 //        id: String,

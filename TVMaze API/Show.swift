@@ -12,9 +12,9 @@ import CoreData
 @objc(DBShow)
 class DBShow: NSManagedObject {
     
-    @NSManaged var id:      String?
+    @NSManaged var id:      NSNumber?
     @NSManaged var name:    String?
-    @NSManaged var summary:  String?
+    @NSManaged var summary: String?
     @NSManaged var imageM:  String?
     @NSManaged var imageO:  String?
     
@@ -22,9 +22,9 @@ class DBShow: NSManagedObject {
 
 class Show {
     
-    var id:      String?
+    var id:      Int?
     var name:    String?
-    var summary:  String?
+    var summary: String?
     var imageM:  String?
     var imageO:  String?
     
