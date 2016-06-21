@@ -1,25 +1,102 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="6211" systemVersion="14A298i" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" initialViewController="BYZ-38-t0r">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="11129.15" systemVersion="15F34" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" colorMatched="YES" initialViewController="P9A-hK-V0h">
     <dependencies>
-        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="6204"/>
+        <deployment identifier="iOS"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="11103.10"/>
+        <capability name="Aspect ratio constraints" minToolsVersion="5.1"/>
+        <capability name="Constraints to layout margins" minToolsVersion="6.0"/>
+        <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
     </dependencies>
     <scenes>
-        <!--View Controller-->
+        <!--Navigation Controller-->
+        <scene sceneID="Z63-LB-3QD">
+            <objects>
+                <navigationController id="P9A-hK-V0h" sceneMemberID="viewController">
+                    <navigationBar key="navigationBar" contentMode="scaleToFill" id="BSE-O8-JGn">
+                        <rect key="frame" x="0.0" y="0.0" width="375" height="44"/>
+                        <autoresizingMask key="autoresizingMask"/>
+                    </navigationBar>
+                    <connections>
+                        <segue destination="BYZ-38-t0r" kind="relationship" relationship="rootViewController" id="U64-Nm-p6z"/>
+                    </connections>
+                </navigationController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="MdY-X6-GUf" userLabel="First Responder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="-710" y="139"/>
+        </scene>
+        <!--Main View Controller-->
         <scene sceneID="tne-QT-ifu">
             <objects>
-                <viewController id="BYZ-38-t0r" customClass="ViewController" customModuleProvider="target" sceneMemberID="viewController">
+                <viewController id="BYZ-38-t0r" customClass="MainViewController" customModule="TVMaze_API" customModuleProvider="target" sceneMemberID="viewController">
                     <layoutGuides>
                         <viewControllerLayoutGuide type="top" id="y3c-jy-aDJ"/>
                         <viewControllerLayoutGuide type="bottom" id="wfy-db-euE"/>
                     </layoutGuides>
                     <view key="view" contentMode="scaleToFill" id="8bC-Xf-vdC">
-                        <rect key="frame" x="0.0" y="0.0" width="600" height="600"/>
+                        <rect key="frame" x="0.0" y="0.0" width="375" height="667"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
-                        <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="calibratedWhite"/>
+                        <subviews>
+                            <tableView clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" dataMode="prototypes" style="plain" separatorStyle="default" rowHeight="100" sectionHeaderHeight="28" sectionFooterHeight="28" translatesAutoresizingMaskIntoConstraints="NO" id="PZ8-KB-nE3">
+                                <color key="backgroundColor" red="1" green="1" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                                <prototypes>
+                                    <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" selectionStyle="blue" hidesAccessoryWhenEditing="NO" indentationLevel="1" indentationWidth="0.0" reuseIdentifier="mainCell" rowHeight="100" id="ZKR-am-cYh" customClass="MainTableViewCell" customModule="TVMaze_API" customModuleProvider="target">
+                                        <frame key="frameInset" minY="92" width="375" height="100"/>
+                                        <autoresizingMask key="autoresizingMask"/>
+                                        <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" tableViewCell="ZKR-am-cYh" id="pJ8-mq-hn9">
+                                            <frame key="frameInset" width="375" height="99"/>
+                                            <autoresizingMask key="autoresizingMask"/>
+                                            <subviews>
+                                                <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" translatesAutoresizingMaskIntoConstraints="NO" id="QBi-4F-6th">
+                                                    <constraints>
+                                                        <constraint firstAttribute="width" secondItem="QBi-4F-6th" secondAttribute="height" multiplier="1:1" id="H1g-C2-PBp"/>
+                                                    </constraints>
+                                                </imageView>
+                                                <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Label" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="FSX-1w-wud">
+                                                    <constraints>
+                                                        <constraint firstAttribute="height" constant="41" id="Qad-55-usz"/>
+                                                    </constraints>
+                                                    <fontDescription key="fontDescription" type="system" pointSize="17"/>
+                                                    <nil key="textColor"/>
+                                                    <nil key="highlightedColor"/>
+                                                </label>
+                                            </subviews>
+                                            <constraints>
+                                                <constraint firstAttribute="leadingMargin" secondItem="QBi-4F-6th" secondAttribute="leading" id="1Ok-cH-SXD"/>
+                                                <constraint firstAttribute="trailingMargin" secondItem="FSX-1w-wud" secondAttribute="trailing" id="FFj-F5-qb6"/>
+                                                <constraint firstAttribute="topMargin" secondItem="FSX-1w-wud" secondAttribute="top" id="JYm-sg-6EV"/>
+                                                <constraint firstItem="FSX-1w-wud" firstAttribute="leading" secondItem="QBi-4F-6th" secondAttribute="trailing" constant="8" id="OwN-g8-e4H"/>
+                                                <constraint firstAttribute="bottomMargin" secondItem="QBi-4F-6th" secondAttribute="bottom" constant="-0.5" id="aeV-zh-0p9"/>
+                                                <constraint firstAttribute="topMargin" secondItem="QBi-4F-6th" secondAttribute="top" id="rl7-6h-XUQ"/>
+                                            </constraints>
+                                        </tableViewCellContentView>
+                                        <connections>
+                                            <outlet property="imgHeader" destination="QBi-4F-6th" id="oBN-PI-JXQ"/>
+                                            <outlet property="lblTitle" destination="FSX-1w-wud" id="iPe-rI-vr8"/>
+                                        </connections>
+                                    </tableViewCell>
+                                </prototypes>
+                                <connections>
+                                    <outlet property="dataSource" destination="BYZ-38-t0r" id="quf-C9-mZ7"/>
+                                    <outlet property="delegate" destination="BYZ-38-t0r" id="fV5-hh-zxG"/>
+                                </connections>
+                            </tableView>
+                        </subviews>
+                        <color key="backgroundColor" red="1" green="1" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                        <constraints>
+                            <constraint firstAttribute="trailing" secondItem="PZ8-KB-nE3" secondAttribute="trailing" id="DQx-S7-xy3"/>
+                            <constraint firstItem="PZ8-KB-nE3" firstAttribute="top" secondItem="8bC-Xf-vdC" secondAttribute="top" id="xNV-kW-IiV"/>
+                            <constraint firstItem="wfy-db-euE" firstAttribute="top" secondItem="PZ8-KB-nE3" secondAttribute="bottom" id="xfo-yM-gtS"/>
+                            <constraint firstItem="PZ8-KB-nE3" firstAttribute="leading" secondItem="8bC-Xf-vdC" secondAttribute="leading" id="yYb-Fc-wZv"/>
+                        </constraints>
                     </view>
+                    <navigationItem key="navigationItem" id="GYa-BI-mWM"/>
+                    <connections>
+                        <outlet property="tableView" destination="PZ8-KB-nE3" id="ABb-fR-kqU"/>
+                    </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="dkx-z0-nzr" sceneMemberID="firstResponder"/>
             </objects>
+            <point key="canvasLocation" x="137.68115942028987" y="138.58695652173915"/>
         </scene>
     </scenes>
 </document>
