@@ -19,22 +19,16 @@ class DataStore {
         return Static.instance
     }
     
-    func createShow(
-        id:         Int,
-        name:       String,
-        summary:    String,
-        imageM:     String,
-        imageO:     String
-        ) -> Bool {
+    func createShow(currentShow: Show) -> Bool {
         
         let ShowEntity = NSEntityDescription.entityForName("DBShow", inManagedObjectContext: managedContext)
         let show = DBShow(entity: ShowEntity!, insertIntoManagedObjectContext: managedContext)
         
-        show.id         = id
-        show.name       = name
-        show.summary    = summary
-        show.imageM     = imageM
-        show.imageO     = imageO
+        show.id         = currentShow.id
+        show.name       = currentShow.name
+        show.summary    = currentShow.summary
+        show.imageM     = currentShow.imageM
+        show.imageO     = currentShow.imageO
         
         (try! managedContext.save())
         return true
@@ -80,7 +74,7 @@ class DataStore {
         return result
     }
     
-    func getShowByID(id: String) -> Show! {
+    func getShowByID(id: String) -> Show {
         let request = NSFetchRequest(entityName: "DBShow")
         request.predicate = NSPredicate(format: "id contains[c] %@", id)
         let objects: [AnyObject]?

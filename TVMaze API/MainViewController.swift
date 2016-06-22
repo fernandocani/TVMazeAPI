@@ -13,7 +13,9 @@ import AlamofireImage
 
 class MainViewController: UIViewController, UITableViewDelegate, UITableViewDataSource {
     
+    @IBOutlet weak var btnSearch: UIBarButtonItem!
     @IBOutlet weak var tableView: UITableView!
+    let searchController    = UISearchController(searchResultsController: nil)
     
     let cellIdentifier      = "mainCell"
     var shows               = NSMutableArray()
@@ -21,14 +23,29 @@ class MainViewController: UIViewController, UITableViewDelegate, UITableViewData
     var higherIndex         = 0
     var currentPageIndex    = 0
     
+    var filteredShowsName   = [Show]()
+    var showsForSearch      = [Show]()
+    
     override func viewDidLoad() {
         super.viewDidLoad()
+        
+        self.searchController.searchResultsUpdater = self
+        self.searchController.hidesNavigationBarDuringPresentation = false
+        self.searchController.dimsBackgroundDuringPresentation = false
+        self.searchController.searchBar.sizeToFit()
+        self.tableView.tableHeaderView = searchController.searchBar
+        
         if DataStore.sharedInstance.hasShow() {
             self.populateArray()
+            for show in shows {
+                showsForSearch.append(show as! Show)
+            }
             self.currentPageIndex = Int(floor(Double(shows.count) / 250) + 1)
         } else {
             self.getShows()
         }
+        
+        self.tableView.scrollToRowAtIndexPath(NSIndexPath(forRow: 0, inSection: 0), atScrollPosition: .Top, animated: false)
     }
 
     override func didReceiveMemoryWarning() {
@@ -41,14 +58,15 @@ class MainViewController: UIViewController, UITableViewDelegate, UITableViewData
             response in switch response.result {
             case .Success(let JSON):
                 for show in (JSON as! NSArray) {
-                    let id      = show.objectForKey("id")                               as! Int
-                    let name    = show.objectForKey("name")                             as! String
-                    let summary = show.objectForKey("summary")                          as! String
-                    let imageM  = show.objectForKey("image")!.objectForKey("medium")    as! String
-                    let imageO  = show.objectForKey("image")!.objectForKey("original")  as! String
-                    if !DataStore.sharedInstance.hasShowByID("\(id)") {
-                        if DataStore.sharedInstance.createShow(id, name: name, summary: summary, imageM: imageM, imageO: imageO) {
-                            print("Salvouuu")
+                    let currentShow = Show()
+                    currentShow.id      = show.objectForKey("id")                               as? Int
+                    currentShow.name    = show.objectForKey("name")                             as? String
+                    currentShow.summary = show.objectForKey("summary")                          as? String
+                    currentShow.imageM  = show.objectForKey("image")!.objectForKey("medium")    as? String
+                    currentShow.imageO  = show.objectForKey("image")!.objectForKey("original")  as? String
+                    if !DataStore.sharedInstance.hasShowByID("\(currentShow.id)") {
+                        if DataStore.sharedInstance.createShow(currentShow) {
+                            self.showsForSearch.append(DataStore.sharedInstance.getShowByID("\(currentShow.id)"))
                         }
                     }
                 }
@@ -67,14 +85,16 @@ class MainViewController: UIViewController, UITableViewDelegate, UITableViewData
             response in switch response.result {
             case .Success(let JSON):
                 for show in (JSON as! NSArray) {
-                    let id      = show.objectForKey("id")                               as! Int
-                    let name    = show.objectForKey("name")                             as! String
-                    let summary = show.objectForKey("summary")                          as! String
-                    let imageM  = show.objectForKey("image")!.objectForKey("medium")    as! String
-                    let imageO  = show.objectForKey("image")!.objectForKey("original")  as! String
-                    if !DataStore.sharedInstance.hasShowByID("\(id)") {
-                        if DataStore.sharedInstance.createShow(id, name: name, summary: summary, imageM: imageM, imageO: imageO) {
-                            self.shows.addObject(DataStore.sharedInstance.getShowByID("\(id)"))
+                    let currentShow = Show()
+                    currentShow.id      = show.objectForKey("id")                               as? Int
+                    currentShow.name    = show.objectForKey("name")                             as? String
+                    currentShow.summary = show.objectForKey("summary")                          as? String
+                    currentShow.imageM  = show.objectForKey("image")!.objectForKey("medium")    as? String
+                    currentShow.imageO  = show.objectForKey("image")!.objectForKey("original")  as? String
+                    if !DataStore.sharedInstance.hasShowByID("\(currentShow.id)") {
+                        if DataStore.sharedInstance.createShow(currentShow) {
+                            self.showsForSearch.append(currentShow)
+                            self.shows.addObject(currentShow)
                             self.tableView.beginUpdates()
                             self.tableView.insertRowsAtIndexPaths([NSIndexPath(forRow: self.shows.count-1, inSection: 0)], withRowAnimation: .Automatic)
                             self.tableView.endUpdates()
@@ -105,27 +125,66 @@ class MainViewController: UIViewController, UITableViewDelegate, UITableViewData
     }
     
     func tableView(tableView: UITableView, cellForRowAtIndexPath indexPath: NSIndexPath) -> UITableViewCell {
-        let cell = tableView.dequeueReusableCellWithIdentifier(cellIdentifier, forIndexPath: indexPath) as! MainTableViewCell
-        cell.lblTitle.text = (shows.objectAtIndex(indexPath.row) as! Show).name!
-        let summary = (shows.objectAtIndex(indexPath.row) as! Show).summary!
-        let regex = try! NSRegularExpression(pattern: "<.*?>", options: [.CaseInsensitive])
-        let summaryFixed: String = regex.stringByReplacingMatchesInString(summary, options: [], range: NSMakeRange(0, summary.characters.count), withTemplate: "")
-        cell.lblSummary.text = summaryFixed
-        cell.imgHeader.af_setImageWithURL(NSURL(string: (shows.objectAtIndex(indexPath.row) as! Show).imageM!)!)
-        return cell
+        if searchController.active && searchController.searchBar.text != "" {
+            let filter = filteredShowsName[indexPath.row].id!
+            let cell = tableView.dequeueReusableCellWithIdentifier(cellIdentifier, forIndexPath: indexPath) as! MainTableViewCell
+            for item in showsForSearch {
+                if item.id! == filter {
+                    cell.lblTitle.text = item.name!
+                    let summary = item.summary!
+                    let regex = try! NSRegularExpression(pattern: "<.*?>", options: [.CaseInsensitive])
+                    let summaryFixed: String = regex.stringByReplacingMatchesInString(summary, options: [], range: NSMakeRange(0, summary.characters.count), withTemplate: "")
+                    cell.lblSummary.text = summaryFixed
+                    cell.imgHeader.af_setImageWithURL(NSURL(string: item.imageM!)!)
+                }
+            }
+            return cell
+        } else {
+            let cell = tableView.dequeueReusableCellWithIdentifier(cellIdentifier, forIndexPath: indexPath) as! MainTableViewCell
+            cell.lblTitle.text = (shows.objectAtIndex(indexPath.row) as! Show).name!
+            let summary = (shows.objectAtIndex(indexPath.row) as! Show).summary!
+            let regex = try! NSRegularExpression(pattern: "<.*?>", options: [.CaseInsensitive])
+            let summaryFixed: String = regex.stringByReplacingMatchesInString(summary, options: [], range: NSMakeRange(0, summary.characters.count), withTemplate: "")
+            cell.lblSummary.text = summaryFixed
+            cell.imgHeader.af_setImageWithURL(NSURL(string: (shows.objectAtIndex(indexPath.row) as! Show).imageM!)!)
+            return cell
+        }
     }
     
     func tableView(tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
+        if searchController.active && searchController.searchBar.text != "" {
+            return filteredShowsName.count
+        }
         return shows.count
     }
     
     func tableView(tableView: UITableView, willDisplayCell cell: UITableViewCell, forRowAtIndexPath indexPath: NSIndexPath) {
-//        if !searchController.active {
+        if !searchController.active {
             if (!loadingData && (indexPath.row == (shows.count - 1))) {
                 self.loadingData = true
                 self.getMoreShows(currentPageIndex)
             }
-//        }
+        }
+    }
+    
+    func filterContentForSearchText(searchText: String, scope: String = "All") {
+        filteredShowsName = showsForSearch.filter{ show in
+            return show.name!.lowercaseString.containsString(searchText.lowercaseString)
+        }
+        tableView.reloadData()
+    }
+    
+    override func prepareForSegue(segue: UIStoryboardSegue, sender: AnyObject?) {
+        //        let cell        = sender as! UITableViewCell
+        //        let indexPath   = tableView.indexPathForCell(cell)!
+        //        if segue.identifier == "toCharacterDetail" {
+        //            let vc      = segue.destinationViewController as! CharacterDetailViewController
+        //            if searchController.active && searchController.searchBar.text != "" {
+        //                vc.char = filteredShowsName[indexPath.row]
+        //            } else {
+        //                vc.char = self.charactersArray[indexPath.row] as! Character
+        //            }
+        //        }
     }
     
     func createLoading() {
@@ -155,6 +214,12 @@ class MainViewController: UIViewController, UITableViewDelegate, UITableViewData
         if (currentWindow!.viewWithTag(2) != nil) {
             currentWindow!.viewWithTag(2)!.removeFromSuperview()
         }
+    }
+}
+
+extension MainViewController: UISearchResultsUpdating {
+    func updateSearchResultsForSearchController(searchController: UISearchController) {
+        filterContentForSearchText(searchController.searchBar.text!)
     }
 }
 

@@ -24,7 +24,7 @@
             </objects>
             <point key="canvasLocation" x="-710" y="139"/>
         </scene>
-        <!--Main View Controller-->
+        <!--Shows-->
         <scene sceneID="tne-QT-ifu">
             <objects>
                 <viewController id="BYZ-38-t0r" customClass="MainViewController" customModule="TVMaze_API" customModuleProvider="target" sceneMemberID="viewController">
@@ -97,19 +97,26 @@
                         <color key="backgroundColor" red="1" green="1" blue="1" alpha="1" colorSpace="calibratedRGB"/>
                         <constraints>
                             <constraint firstAttribute="trailing" secondItem="PZ8-KB-nE3" secondAttribute="trailing" id="DQx-S7-xy3"/>
-                            <constraint firstItem="PZ8-KB-nE3" firstAttribute="top" secondItem="8bC-Xf-vdC" secondAttribute="top" id="xNV-kW-IiV"/>
+                            <constraint firstItem="PZ8-KB-nE3" firstAttribute="top" secondItem="8bC-Xf-vdC" secondAttribute="top" id="ipi-dy-ZH0"/>
                             <constraint firstItem="wfy-db-euE" firstAttribute="top" secondItem="PZ8-KB-nE3" secondAttribute="bottom" id="xfo-yM-gtS"/>
                             <constraint firstItem="PZ8-KB-nE3" firstAttribute="leading" secondItem="8bC-Xf-vdC" secondAttribute="leading" id="yYb-Fc-wZv"/>
                         </constraints>
                     </view>
-                    <navigationItem key="navigationItem" id="GYa-BI-mWM"/>
+                    <navigationItem key="navigationItem" title="Shows" id="iEb-E6-IUR">
+                        <barButtonItem key="rightBarButtonItem" systemItem="search" id="Mx9-Xr-qSW">
+                            <connections>
+                                <action selector="btnSearch:" destination="BYZ-38-t0r" id="dqV-3n-AuJ"/>
+                            </connections>
+                        </barButtonItem>
+                    </navigationItem>
                     <connections>
+                        <outlet property="btnSearch" destination="Mx9-Xr-qSW" id="dqL-Xx-Nyk"/>
                         <outlet property="tableView" destination="PZ8-KB-nE3" id="ABb-fR-kqU"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="dkx-z0-nzr" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="137" y="138"/>
+            <point key="canvasLocation" x="146" y="196"/>
         </scene>
     </scenes>
 </document>
