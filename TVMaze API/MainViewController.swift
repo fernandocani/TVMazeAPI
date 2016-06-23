@@ -132,44 +132,41 @@ class MainViewController: UIViewController, UITableViewDelegate, UITableViewData
         return 1
     }
     
+    func populateCell(indexPath: NSIndexPath, show: Show) -> MainTableViewCell {
+        let cell = tableView.dequeueReusableCellWithIdentifier(cellIdentifier, forIndexPath: indexPath) as! MainTableViewCell
+        cell.lblTitle.text      = show.name!
+        cell.lblSummary.text    = show.summary!
+        cell.imgHeader.af_setImageWithURL(NSURL(string: show.imageM!)!)
+        cell.show               = show
+        return cell
+    }
+    
+    func populateCellFiltered(indexPath: NSIndexPath) -> MainTableViewCell {
+        let filter  = filteredShowsName[indexPath.row].id!
+        let cell    = tableView.dequeueReusableCellWithIdentifier(cellIdentifier, forIndexPath: indexPath) as! MainTableViewCell
+        for item in showsForSearch {
+            if item.id! == filter {
+                cell.lblTitle.text      = item.name!
+                cell.lblSummary.text    = item.summary!
+                cell.imgHeader.af_setImageWithURL(NSURL(string: item.imageM!)!)
+                cell.show               = item
+            }
+        }
+        return cell
+    }
+    
     func tableView(tableView: UITableView, cellForRowAtIndexPath indexPath: NSIndexPath) -> UITableViewCell {
         if self.segAllFav.selectedSegmentIndex == 0 {
             if searchController.active && searchController.searchBar.text != "" {
-                let filter = filteredShowsName[indexPath.row].id!
-                let cell = tableView.dequeueReusableCellWithIdentifier(cellIdentifier, forIndexPath: indexPath) as! MainTableViewCell
-                for item in showsForSearch {
-                    if item.id! == filter {
-                        cell.lblTitle.text = item.name!
-                        cell.lblSummary.text = item.summary!
-                        cell.imgHeader.af_setImageWithURL(NSURL(string: item.imageM!)!)
-                    }
-                }
-                return cell
+                return self.populateCellFiltered(indexPath)
             } else {
-                let cell = tableView.dequeueReusableCellWithIdentifier(cellIdentifier, forIndexPath: indexPath) as! MainTableViewCell
-                cell.lblTitle.text = (shows.objectAtIndex(indexPath.row) as! Show).name!
-                cell.lblSummary.text = (shows.objectAtIndex(indexPath.row) as! Show).summary!
-                cell.imgHeader.af_setImageWithURL(NSURL(string: (shows.objectAtIndex(indexPath.row) as! Show).imageM!)!)
-                return cell
+                return self.populateCell(indexPath, show: shows.objectAtIndex(indexPath.row) as! Show)
             }
         } else {
             if searchController.active && searchController.searchBar.text != "" {
-                let filter = filteredShowsName[indexPath.row].id!
-                let cell = tableView.dequeueReusableCellWithIdentifier(cellIdentifier, forIndexPath: indexPath) as! MainTableViewCell
-                for item in showsForSearch {
-                    if item.id! == filter {
-                        cell.lblTitle.text = item.name!
-                        cell.lblSummary.text = item.summary!
-                        cell.imgHeader.af_setImageWithURL(NSURL(string: item.imageM!)!)
-                    }
-                }
-                return cell
+                return self.populateCellFiltered(indexPath)
             } else {
-                let cell = tableView.dequeueReusableCellWithIdentifier(cellIdentifier, forIndexPath: indexPath) as! MainTableViewCell
-                cell.lblTitle.text = (favoriteShows.objectAtIndex(indexPath.row) as! Show).name!
-                cell.lblSummary.text = (favoriteShows.objectAtIndex(indexPath.row) as! Show).summary!
-                cell.imgHeader.af_setImageWithURL(NSURL(string: (favoriteShows.objectAtIndex(indexPath.row) as! Show).imageM!)!)
-                return cell
+                return self.populateCell(indexPath, show: favoriteShows.objectAtIndex(indexPath.row) as! Show)
             }
         }
     }
@@ -199,6 +196,8 @@ class MainViewController: UIViewController, UITableViewDelegate, UITableViewData
         }
     }
     
+    var selectedImage = UIImage()
+    
     func filterContentForSearchText(searchText: String, scope: String = "All") {
         filteredShowsName = showsForSearch.filter{ show in
             return show.name!.lowercaseString.containsString(searchText.lowercaseString)
@@ -207,42 +206,11 @@ class MainViewController: UIViewController, UITableViewDelegate, UITableViewData
     }
     
     override func prepareForSegue(segue: UIStoryboardSegue, sender: AnyObject?) {
-        let cell        = sender as! UITableViewCell
-        let indexPath   = tableView.indexPathForCell(cell)!
+        let cell                = sender as! MainTableViewCell
         if segue.identifier == "toDetail" {
-//            let vc      = segue.destinationViewController as! DetailViewController
-//            if segAllFav.selectedSegmentIndex == 0 {
-//                if searchController.active && searchController.searchBar.text != "" {
-//                    vc.currentShow = filteredShowsName[indexPath.row]
-//                } else {
-//                    vc.currentShow = shows[indexPath.row] as! Show
-//                }
-//            } else {
-//                if searchController.active && searchController.searchBar.text != "" {
-//                    vc.currentShow = filteredShowsName[indexPath.row]
-//                } else {
-//                    vc.currentShow = favoriteShows[indexPath.row] as! Show
-//                }
-//            }
-//            self.searchController.active = false
-            
-            
-            
-            
-            let vc      = segue.destinationViewController as! DetailViewController
-            if segAllFav.selectedSegmentIndex == 0 {
-                if searchController.active && searchController.searchBar.text != "" {
-                    vc.currentShow = DataStore.sharedInstance.getShowByID("\(filteredShowsName[indexPath.row].id)")
-                } else {
-                    vc.currentShow = DataStore.sharedInstance.getShowByID("\((shows[indexPath.row] as! Show).id)")
-                }
-            } else {
-                if searchController.active && searchController.searchBar.text != "" {
-                    vc.currentShow = DataStore.sharedInstance.getShowByID("\(filteredShowsName[indexPath.row].id)")
-                } else {
-                    vc.currentShow = DataStore.sharedInstance.getShowByID("\((favoriteShows[indexPath.row] as! Show).id)")
-                }
-            }
+            let vc              = segue.destinationViewController as! DetailViewController
+            vc.currentShow      = DataStore.sharedInstance.getShowByID("\(cell.show.id)")
+            vc.selectedImage    = cell.imgHeader.image!
             self.searchController.active = false
         }
     }
@@ -314,4 +282,6 @@ class MainTableViewCell: UITableViewCell {
     @IBOutlet weak var imgHeader:   UIImageView!
     @IBOutlet weak var lblTitle:    UILabel!
     @IBOutlet weak var lblSummary:  UILabel!
+    
+    var show: Show!
 }

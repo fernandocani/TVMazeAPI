@@ -21,10 +21,12 @@ class DetailViewController: UIViewController, UITableViewDataSource, UITableView
     @IBOutlet weak var tableView:   UITableView!
     @IBOutlet weak var actLoading: UIActivityIndicatorView!
     
-    var currentShow: Show!
-    let allEpisodes = NSMutableArray()
-    let seasons  = NSMutableDictionary()
-    let cellIdentifier = "episodesCell"
+    var currentShow:    Show!
+    var selectedImage:  UIImage!
+    let allEpisodes     = NSMutableArray()
+    let seasons         = NSMutableDictionary()
+    let cellIdentifier  = "episodesCell"
+    
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -50,7 +52,7 @@ class DetailViewController: UIViewController, UITableViewDataSource, UITableView
             self.btnFavorite.title = "fav"
         }
         
-        self.imgHeader.af_setImageWithURL(NSURL(string: currentShow.imageM!)!)
+        self.imgHeader.image = selectedImage//af_setImageWithURL(NSURL(string: currentShow.imageM!)!)
         self.txtSummary.editable        = true
         self.txtSummary.font            = .systemFontOfSize(15.0)
         self.txtSummary.text            = currentShow.summary

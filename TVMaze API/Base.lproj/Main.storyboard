@@ -38,7 +38,7 @@
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
                             <tableView clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" dataMode="prototypes" style="plain" separatorStyle="default" rowHeight="100" sectionHeaderHeight="28" sectionFooterHeight="28" translatesAutoresizingMaskIntoConstraints="NO" id="PZ8-KB-nE3">
-                                <rect key="frame" x="0.0" y="0.0" width="600" height="556"/>
+                                <rect key="frame" x="0.0" y="0.0" width="600" height="600"/>
                                 <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
                                 <prototypes>
                                     <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" selectionStyle="none" hidesAccessoryWhenEditing="NO" indentationLevel="1" indentationWidth="0.0" reuseIdentifier="mainCell" rowHeight="100" id="ZKR-am-cYh" customClass="MainTableViewCell" customModule="TVMaze_API" customModuleProvider="target">
@@ -98,6 +98,17 @@
                                     <outlet property="delegate" destination="BYZ-38-t0r" id="fV5-hh-zxG"/>
                                 </connections>
                             </tableView>
+                            <visualEffectView opaque="NO" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="KFV-Q0-JHB">
+                                <rect key="frame" x="0.0" y="556" width="600" height="44"/>
+                                <view key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" id="4Bf-Cj-8ac">
+                                    <rect key="frame" x="0.0" y="0.0" width="600" height="44"/>
+                                    <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                                </view>
+                                <constraints>
+                                    <constraint firstAttribute="height" constant="44" id="E7t-tQ-ay2"/>
+                                </constraints>
+                                <blurEffect style="light"/>
+                            </visualEffectView>
                             <segmentedControl opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="top" segmentControlStyle="plain" selectedSegmentIndex="0" translatesAutoresizingMaskIntoConstraints="NO" id="RMA-W0-kkF">
                                 <rect key="frame" x="20" y="564" width="560" height="29"/>
                                 <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
@@ -113,11 +124,14 @@
                         </subviews>
                         <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
                         <constraints>
+                            <constraint firstItem="wfy-db-euE" firstAttribute="top" secondItem="KFV-Q0-JHB" secondAttribute="bottom" id="6Yw-Iq-EWh"/>
                             <constraint firstItem="wfy-db-euE" firstAttribute="top" secondItem="RMA-W0-kkF" secondAttribute="bottom" constant="8" id="AcP-dC-gy3"/>
+                            <constraint firstItem="KFV-Q0-JHB" firstAttribute="leading" secondItem="8bC-Xf-vdC" secondAttribute="leading" id="BAA-w2-DDr"/>
                             <constraint firstAttribute="trailing" secondItem="PZ8-KB-nE3" secondAttribute="trailing" id="DQx-S7-xy3"/>
                             <constraint firstAttribute="trailingMargin" secondItem="RMA-W0-kkF" secondAttribute="trailing" id="OTP-9Y-cxS"/>
+                            <constraint firstAttribute="trailing" secondItem="KFV-Q0-JHB" secondAttribute="trailing" id="ViM-0o-bc8"/>
                             <constraint firstAttribute="leadingMargin" secondItem="RMA-W0-kkF" secondAttribute="leading" id="a5n-WL-QOl"/>
-                            <constraint firstItem="RMA-W0-kkF" firstAttribute="top" secondItem="PZ8-KB-nE3" secondAttribute="bottom" constant="8" id="b5B-VL-jRz"/>
+                            <constraint firstItem="wfy-db-euE" firstAttribute="top" secondItem="PZ8-KB-nE3" secondAttribute="bottom" id="g6f-41-95P"/>
                             <constraint firstItem="PZ8-KB-nE3" firstAttribute="top" secondItem="8bC-Xf-vdC" secondAttribute="top" id="qcm-h0-ZXF"/>
                             <constraint firstItem="PZ8-KB-nE3" firstAttribute="leading" secondItem="8bC-Xf-vdC" secondAttribute="leading" id="yYb-Fc-wZv"/>
                         </constraints>
