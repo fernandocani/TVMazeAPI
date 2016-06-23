@@ -13,7 +13,6 @@ import AlamofireImage
 
 class MainViewController: UIViewController, UITableViewDelegate, UITableViewDataSource {
     
-    @IBOutlet weak var btnSearch: UIBarButtonItem!
     @IBOutlet weak var tableView: UITableView!
     let searchController    = UISearchController(searchResultsController: nil)
     
@@ -34,22 +33,34 @@ class MainViewController: UIViewController, UITableViewDelegate, UITableViewData
         self.searchController.dimsBackgroundDuringPresentation = false
         self.searchController.searchBar.sizeToFit()
         self.tableView.tableHeaderView = searchController.searchBar
-        
+//        DataStore.sharedInstance.whipeCD()
         if DataStore.sharedInstance.hasShow() {
             self.populateArray()
             for show in shows {
                 showsForSearch.append(show as! Show)
             }
-            self.currentPageIndex = Int(floor(Double(shows.count) / 250) + 1)
+            self.currentPageIndex = Int(floor(Double(shows.count) / 250))
+            self.tableView.scrollToRowAtIndexPath(NSIndexPath(forRow: 0, inSection: 0), atScrollPosition: .Top, animated: false)
         } else {
             self.getShows()
         }
-        
-        self.tableView.scrollToRowAtIndexPath(NSIndexPath(forRow: 0, inSection: 0), atScrollPosition: .Top, animated: false)
     }
 
     override func didReceiveMemoryWarning() {
         super.didReceiveMemoryWarning()
+    }
+   
+    func getShowData(show: NSDictionary) -> Show {
+        let currentShow = Show()
+        currentShow.id      = show.objectForKey("id")                               as? Int
+        currentShow.name    = show.objectForKey("name")                             as? String
+        currentShow.summary = self.cleanSummary((show.objectForKey("summary")       as? String)!)
+        currentShow.imageM  = show.objectForKey("image")!.objectForKey("medium")    as? String
+        currentShow.imageO  = show.objectForKey("image")!.objectForKey("original")  as? String
+        currentShow.genres  = show.objectForKey("genres")!                          as? [String]
+        currentShow.scheduleD = show.objectForKey("schedule")!.objectForKey("days") as? [String]
+        currentShow.scheduleT = show.objectForKey("schedule")!.objectForKey("time") as? String
+        return currentShow
     }
     
     func getShows() {
@@ -58,15 +69,11 @@ class MainViewController: UIViewController, UITableViewDelegate, UITableViewData
             response in switch response.result {
             case .Success(let JSON):
                 for show in (JSON as! NSArray) {
-                    let currentShow = Show()
-                    currentShow.id      = show.objectForKey("id")                               as? Int
-                    currentShow.name    = show.objectForKey("name")                             as? String
-                    currentShow.summary = show.objectForKey("summary")                          as? String
-                    currentShow.imageM  = show.objectForKey("image")!.objectForKey("medium")    as? String
-                    currentShow.imageO  = show.objectForKey("image")!.objectForKey("original")  as? String
+                    let currentShow = self.getShowData(show as! NSDictionary)
                     if !DataStore.sharedInstance.hasShowByID("\(currentShow.id)") {
                         if DataStore.sharedInstance.createShow(currentShow) {
-                            self.showsForSearch.append(DataStore.sharedInstance.getShowByID("\(currentShow.id)"))
+                            let savedShow = DataStore.sharedInstance.getShowByID("\(currentShow.id!)")
+                            self.showsForSearch.append(savedShow)
                         }
                     }
                 }
@@ -85,13 +92,8 @@ class MainViewController: UIViewController, UITableViewDelegate, UITableViewData
             response in switch response.result {
             case .Success(let JSON):
                 for show in (JSON as! NSArray) {
-                    let currentShow = Show()
-                    currentShow.id      = show.objectForKey("id")                               as? Int
-                    currentShow.name    = show.objectForKey("name")                             as? String
-                    currentShow.summary = show.objectForKey("summary")                          as? String
-                    currentShow.imageM  = show.objectForKey("image")!.objectForKey("medium")    as? String
-                    currentShow.imageO  = show.objectForKey("image")!.objectForKey("original")  as? String
-                    if !DataStore.sharedInstance.hasShowByID("\(currentShow.id)") {
+                    let currentShow = self.getShowData(show as! NSDictionary)
+                    if !DataStore.sharedInstance.hasShowByID("\(currentShow.id!)") {
                         if DataStore.sharedInstance.createShow(currentShow) {
                             self.showsForSearch.append(currentShow)
                             self.shows.addObject(currentShow)
@@ -117,6 +119,7 @@ class MainViewController: UIViewController, UITableViewDelegate, UITableViewData
             }
         }
         self.tableView.reloadData()
+        self.tableView.scrollToRowAtIndexPath(NSIndexPath(forRow: 0, inSection: 0), atScrollPosition: .Top, animated: false)
         self.removeLoading()
     }
     
@@ -131,10 +134,7 @@ class MainViewController: UIViewController, UITableViewDelegate, UITableViewData
             for item in showsForSearch {
                 if item.id! == filter {
                     cell.lblTitle.text = item.name!
-                    let summary = item.summary!
-                    let regex = try! NSRegularExpression(pattern: "<.*?>", options: [.CaseInsensitive])
-                    let summaryFixed: String = regex.stringByReplacingMatchesInString(summary, options: [], range: NSMakeRange(0, summary.characters.count), withTemplate: "")
-                    cell.lblSummary.text = summaryFixed
+                    cell.lblSummary.text = item.summary!
                     cell.imgHeader.af_setImageWithURL(NSURL(string: item.imageM!)!)
                 }
             }
@@ -142,10 +142,7 @@ class MainViewController: UIViewController, UITableViewDelegate, UITableViewData
         } else {
             let cell = tableView.dequeueReusableCellWithIdentifier(cellIdentifier, forIndexPath: indexPath) as! MainTableViewCell
             cell.lblTitle.text = (shows.objectAtIndex(indexPath.row) as! Show).name!
-            let summary = (shows.objectAtIndex(indexPath.row) as! Show).summary!
-            let regex = try! NSRegularExpression(pattern: "<.*?>", options: [.CaseInsensitive])
-            let summaryFixed: String = regex.stringByReplacingMatchesInString(summary, options: [], range: NSMakeRange(0, summary.characters.count), withTemplate: "")
-            cell.lblSummary.text = summaryFixed
+            cell.lblSummary.text = (shows.objectAtIndex(indexPath.row) as! Show).summary!
             cell.imgHeader.af_setImageWithURL(NSURL(string: (shows.objectAtIndex(indexPath.row) as! Show).imageM!)!)
             return cell
         }
@@ -175,16 +172,23 @@ class MainViewController: UIViewController, UITableViewDelegate, UITableViewData
     }
     
     override func prepareForSegue(segue: UIStoryboardSegue, sender: AnyObject?) {
-        //        let cell        = sender as! UITableViewCell
-        //        let indexPath   = tableView.indexPathForCell(cell)!
-        //        if segue.identifier == "toCharacterDetail" {
-        //            let vc      = segue.destinationViewController as! CharacterDetailViewController
-        //            if searchController.active && searchController.searchBar.text != "" {
-        //                vc.char = filteredShowsName[indexPath.row]
-        //            } else {
-        //                vc.char = self.charactersArray[indexPath.row] as! Character
-        //            }
-        //        }
+        let cell        = sender as! UITableViewCell
+        let indexPath   = tableView.indexPathForCell(cell)!
+        if segue.identifier == "toDetail" {
+            let vc      = segue.destinationViewController as! DetailViewController
+            if searchController.active && searchController.searchBar.text != "" {
+                vc.currentShow = filteredShowsName[indexPath.row]
+                self.searchController.active = false
+            } else {
+                vc.currentShow = shows[indexPath.row] as! Show
+            }
+        }
+    }
+    
+    func cleanSummary(summary: String) -> String {
+        let regex = try! NSRegularExpression(pattern: "<.*?>", options: [.CaseInsensitive])
+        let summaryFixed: String = regex.stringByReplacingMatchesInString(summary, options: [], range: NSMakeRange(0, summary.characters.count), withTemplate: "")
+        return summaryFixed
     }
     
     func createLoading() {

@@ -26,10 +26,12 @@ class DataStore {
         
         show.id         = currentShow.id
         show.name       = currentShow.name
-        show.summary    = currentShow.summary
-        show.imageM     = currentShow.imageM
-        show.imageO     = currentShow.imageO
-        
+        show.summary    = currentShow.summary!
+        show.imageM     = currentShow.imageM!
+        show.imageO     = currentShow.imageO!
+        show.genres     = currentShow.genres!
+        show.scheduleD  = currentShow.scheduleD!
+        show.scheduleT  = currentShow.scheduleT!
         (try! managedContext.save())
         return true
     }
@@ -64,11 +66,14 @@ class DataStore {
         let result = NSMutableArray()
         for item in objects! {
             let show        = Show()
-            show.id         = Int((item as! DBShow).id!)
-            show.name       = (item as! DBShow).name!
-            show.summary    = (item as! DBShow).summary!
-            show.imageM     = (item as! DBShow).imageM!
-            show.imageO     = (item as! DBShow).imageO!
+            show.id         = Int((item as! DBShow).id)
+            show.name       = (item as! DBShow).name
+            show.summary    = (item as! DBShow).summary
+            show.imageM     = (item as! DBShow).imageM
+            show.imageO     = (item as! DBShow).imageO
+            show.genres     = (item as! DBShow).genres
+            show.scheduleD  = (item as! DBShow).scheduleD
+            show.scheduleT  = (item as! DBShow).scheduleT
             result.addObject(show)
         }
         return result
@@ -80,11 +85,14 @@ class DataStore {
         let objects: [AnyObject]?
         objects = (try! managedContext.executeFetchRequest(request))
         let show = Show()
-        show.id         = Int((objects!.first as! DBShow).id!)
+        show.id         = Int((objects!.first as! DBShow).id)
         show.name       = (objects!.first as! DBShow).name
         show.summary    = (objects!.first as! DBShow).summary
         show.imageM     = (objects!.first as! DBShow).imageM
         show.imageO     = (objects!.first as! DBShow).imageO
+        show.genres     = (objects!.first as! DBShow).genres
+        show.scheduleD  = (objects!.first as! DBShow).scheduleD
+        show.scheduleT  = (objects!.first as! DBShow).scheduleT
         return show
     }
 
@@ -126,11 +134,8 @@ class DataStore {
 //    }
     
     func whipeCD () -> Bool {
-        let fetchRequest1 = NSFetchRequest(entityName: "Show")
-        let deleteRequest1 = NSBatchDeleteRequest(fetchRequest: fetchRequest1)
-        (try! managedContext.executeRequest(deleteRequest1))
-        
+        let deleteRequest = NSBatchDeleteRequest(fetchRequest: NSFetchRequest(entityName: "DBShow"))
+        (try! managedContext.executeRequest(deleteRequest))
         return true
     }
-    
 }

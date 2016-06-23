@@ -12,20 +12,26 @@ import CoreData
 @objc(DBShow)
 class DBShow: NSManagedObject {
     
-    @NSManaged var id:      NSNumber?
-    @NSManaged var name:    String?
-    @NSManaged var summary: String?
-    @NSManaged var imageM:  String?
-    @NSManaged var imageO:  String?
+    @NSManaged var id:          NSNumber
+    @NSManaged var name:        String
+    @NSManaged var summary:     String
+    @NSManaged var imageM:      String
+    @NSManaged var imageO:      String
+    @NSManaged var genres:      [String]
+    @NSManaged var scheduleD:   [String]
+    @NSManaged var scheduleT:   String
     
 }
 
 class Show {
     
-    var id:      Int?
-    var name:    String?
-    var summary: String?
-    var imageM:  String?
-    var imageO:  String?
+    var id:         Int!
+    var name:       String!
+    var summary:    String?
+    var imageM:     String?
+    var imageO:     String?
+    var genres:     [String]?
+    var scheduleD:  [String]?
+    var scheduleT:  String?
     
 }
