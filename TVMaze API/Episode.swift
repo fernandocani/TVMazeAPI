@@ -15,5 +15,7 @@ class Episode {
     var number:     Int?
     var name:       String?
     var summary:    String?
+    var imageM:     String?
+    var imageO:     String?
     
 }

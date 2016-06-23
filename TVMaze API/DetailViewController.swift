@@ -18,6 +18,7 @@ class DetailViewController: UIViewController, UITableViewDataSource, UITableView
     @IBOutlet weak var lblSchedule: UILabel!
     @IBOutlet weak var segSeasons:  UISegmentedControl!
     @IBOutlet weak var tableView:   UITableView!
+    @IBOutlet weak var actLoading: UIActivityIndicatorView!
     
     var currentShow: Show!
     let allEpisodes = NSMutableArray()
@@ -26,10 +27,11 @@ class DetailViewController: UIViewController, UITableViewDataSource, UITableView
     
     override func viewDidLoad() {
         super.viewDidLoad()
+        self.view.backgroundColor = UIColor(hex: viewBlackColor)
         self.setLayout()
         self.getSeasons()
     }
-
+    
     override func viewDidLayoutSubviews() {
         self.txtSummary.setContentOffset(CGPointZero, animated: false)
     }
@@ -45,8 +47,9 @@ class DetailViewController: UIViewController, UITableViewDataSource, UITableView
         self.txtSummary.font            = .systemFontOfSize(15.0)
         self.txtSummary.text            = currentShow.summary
         self.txtSummary.editable        = false
-        
+        self.txtSummary.backgroundColor = UIColor(hex: viewBlackColor)
         self.lblGenres.text = ""
+        
         if currentShow.genres != nil {
             for item in currentShow.genres! {
                 if self.lblGenres.text == "" {
@@ -66,10 +69,13 @@ class DetailViewController: UIViewController, UITableViewDataSource, UITableView
                 }
             }
         }
-        self.lblSchedule.text = self.lblSchedule.text! + " @ " + currentShow.scheduleT!
+        self.lblSchedule.text = self.lblSchedule.text! + "'s @ " + currentShow.scheduleT!
         
         self.segSeasons.removeAllSegments()
-        self.segSeasons.hidden = true
+        self.segSeasons.hidden  = true
+        self.tableView.hidden   = true
+        self.actLoading.hidden  = false
+        self.tableView.backgroundColor = UIColor.clearColor()
     }
     
     func getSeasons() {
@@ -84,6 +90,11 @@ class DetailViewController: UIViewController, UITableViewDataSource, UITableView
                     currentEpisode.number   = episode.objectForKey("number")    as? Int
                     currentEpisode.name     = episode.objectForKey("name")      as? String
                     currentEpisode.summary  = self.cleanSummary((episode.objectForKey("summary") as? String)!)
+                    if let image = episode.objectForKey("image") as? NSDictionary {
+                        currentEpisode.imageO = image.objectForKey("original") as? String
+                    } else {
+                        currentEpisode.imageO = "null"
+                    }
                     self.allEpisodes.addObject(currentEpisode)
                     if !numberOfSeasons.contains(currentEpisode.season!) {
                         numberOfSeasons.append(currentEpisode.season!)
@@ -99,8 +110,10 @@ class DetailViewController: UIViewController, UITableViewDataSource, UITableView
                     self.seasons.setValue(episodes, forKey: "\(value)")
                     self.segSeasons.insertSegmentWithTitle("\(value)", atIndex: value, animated: false)
                 }
-                self.segSeasons.hidden = false
                 self.segSeasons.selectedSegmentIndex = 0
+                self.segSeasons.hidden  = false
+                self.tableView.hidden   = false
+                self.actLoading.hidden  = true
                 self.tableView.reloadData()
             case .Failure(let error):
                 print("Request failed with error: \(error)")
@@ -137,6 +150,17 @@ class DetailViewController: UIViewController, UITableViewDataSource, UITableView
     @IBAction func segSeasons(sender: UISegmentedControl) {
         self.tableView.reloadData()
     }
+    
+    override func prepareForSegue(segue: UIStoryboardSegue, sender: AnyObject?) {
+        let cell        = sender as! UITableViewCell
+        let indexPath   = tableView.indexPathForCell(cell)!
+        if segue.identifier == "toEpisode" {
+            let vc = segue.destinationViewController as! EpisodeViewController
+            vc.currentEpisode = ((self.seasons.valueForKey("\(self.segSeasons.selectedSegmentIndex + 1)")!).valueForKey("\(indexPath.row + 1)") as! Episode) 
+        }
+    }
+    
+    
 }
 
 class EpisodesTableViewCell: UITableViewCell {
