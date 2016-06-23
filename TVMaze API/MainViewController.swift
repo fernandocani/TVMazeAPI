@@ -14,6 +14,8 @@ import AlamofireImage
 class MainViewController: UIViewController, UITableViewDelegate, UITableViewDataSource {
     
     @IBOutlet weak var tableView: UITableView!
+    @IBOutlet weak var segAllFav: UISegmentedControl!
+    
     let searchController    = UISearchController(searchResultsController: nil)
     
     let cellIdentifier      = "mainCell"
@@ -24,6 +26,7 @@ class MainViewController: UIViewController, UITableViewDelegate, UITableViewData
     
     var filteredShowsName   = [Show]()
     var showsForSearch      = [Show]()
+    var favoriteShows       = NSMutableArray()
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -61,6 +64,7 @@ class MainViewController: UIViewController, UITableViewDelegate, UITableViewData
         currentShow.genres  = show.objectForKey("genres")!                          as? [String]
         currentShow.scheduleD = show.objectForKey("schedule")!.objectForKey("days") as? [String]
         currentShow.scheduleT = show.objectForKey("schedule")!.objectForKey("time") as? String
+        currentShow.favorite = false
         return currentShow
     }
     
@@ -129,38 +133,68 @@ class MainViewController: UIViewController, UITableViewDelegate, UITableViewData
     }
     
     func tableView(tableView: UITableView, cellForRowAtIndexPath indexPath: NSIndexPath) -> UITableViewCell {
-        if searchController.active && searchController.searchBar.text != "" {
-            let filter = filteredShowsName[indexPath.row].id!
-            let cell = tableView.dequeueReusableCellWithIdentifier(cellIdentifier, forIndexPath: indexPath) as! MainTableViewCell
-            for item in showsForSearch {
-                if item.id! == filter {
-                    cell.lblTitle.text = item.name!
-                    cell.lblSummary.text = item.summary!
-                    cell.imgHeader.af_setImageWithURL(NSURL(string: item.imageM!)!)
+        if self.segAllFav.selectedSegmentIndex == 0 {
+            if searchController.active && searchController.searchBar.text != "" {
+                let filter = filteredShowsName[indexPath.row].id!
+                let cell = tableView.dequeueReusableCellWithIdentifier(cellIdentifier, forIndexPath: indexPath) as! MainTableViewCell
+                for item in showsForSearch {
+                    if item.id! == filter {
+                        cell.lblTitle.text = item.name!
+                        cell.lblSummary.text = item.summary!
+                        cell.imgHeader.af_setImageWithURL(NSURL(string: item.imageM!)!)
+                    }
                 }
+                return cell
+            } else {
+                let cell = tableView.dequeueReusableCellWithIdentifier(cellIdentifier, forIndexPath: indexPath) as! MainTableViewCell
+                cell.lblTitle.text = (shows.objectAtIndex(indexPath.row) as! Show).name!
+                cell.lblSummary.text = (shows.objectAtIndex(indexPath.row) as! Show).summary!
+                cell.imgHeader.af_setImageWithURL(NSURL(string: (shows.objectAtIndex(indexPath.row) as! Show).imageM!)!)
+                return cell
             }
-            return cell
         } else {
-            let cell = tableView.dequeueReusableCellWithIdentifier(cellIdentifier, forIndexPath: indexPath) as! MainTableViewCell
-            cell.lblTitle.text = (shows.objectAtIndex(indexPath.row) as! Show).name!
-            cell.lblSummary.text = (shows.objectAtIndex(indexPath.row) as! Show).summary!
-            cell.imgHeader.af_setImageWithURL(NSURL(string: (shows.objectAtIndex(indexPath.row) as! Show).imageM!)!)
-            return cell
+            if searchController.active && searchController.searchBar.text != "" {
+                let filter = filteredShowsName[indexPath.row].id!
+                let cell = tableView.dequeueReusableCellWithIdentifier(cellIdentifier, forIndexPath: indexPath) as! MainTableViewCell
+                for item in showsForSearch {
+                    if item.id! == filter {
+                        cell.lblTitle.text = item.name!
+                        cell.lblSummary.text = item.summary!
+                        cell.imgHeader.af_setImageWithURL(NSURL(string: item.imageM!)!)
+                    }
+                }
+                return cell
+            } else {
+                let cell = tableView.dequeueReusableCellWithIdentifier(cellIdentifier, forIndexPath: indexPath) as! MainTableViewCell
+                cell.lblTitle.text = (favoriteShows.objectAtIndex(indexPath.row) as! Show).name!
+                cell.lblSummary.text = (favoriteShows.objectAtIndex(indexPath.row) as! Show).summary!
+                cell.imgHeader.af_setImageWithURL(NSURL(string: (favoriteShows.objectAtIndex(indexPath.row) as! Show).imageM!)!)
+                return cell
+            }
         }
     }
     
     func tableView(tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        if searchController.active && searchController.searchBar.text != "" {
-            return filteredShowsName.count
+        if segAllFav.selectedSegmentIndex == 0 {
+            if searchController.active && searchController.searchBar.text != "" {
+                return filteredShowsName.count
+            }
+            return shows.count
+        } else {
+            if searchController.active && searchController.searchBar.text != "" {
+                return filteredShowsName.count
+            }
+            return favoriteShows.count
         }
-        return shows.count
     }
     
     func tableView(tableView: UITableView, willDisplayCell cell: UITableViewCell, forRowAtIndexPath indexPath: NSIndexPath) {
-        if !searchController.active {
-            if (!loadingData && (indexPath.row == (shows.count - 1))) {
-                self.loadingData = true
-                self.getMoreShows(currentPageIndex)
+        if segAllFav.selectedSegmentIndex == 0 {
+            if !searchController.active {
+                if (!loadingData && (indexPath.row == (shows.count - 1))) {
+                    self.loadingData = true
+                    self.getMoreShows(currentPageIndex)
+                }
             }
         }
     }
@@ -176,13 +210,40 @@ class MainViewController: UIViewController, UITableViewDelegate, UITableViewData
         let cell        = sender as! UITableViewCell
         let indexPath   = tableView.indexPathForCell(cell)!
         if segue.identifier == "toDetail" {
+//            let vc      = segue.destinationViewController as! DetailViewController
+//            if segAllFav.selectedSegmentIndex == 0 {
+//                if searchController.active && searchController.searchBar.text != "" {
+//                    vc.currentShow = filteredShowsName[indexPath.row]
+//                } else {
+//                    vc.currentShow = shows[indexPath.row] as! Show
+//                }
+//            } else {
+//                if searchController.active && searchController.searchBar.text != "" {
+//                    vc.currentShow = filteredShowsName[indexPath.row]
+//                } else {
+//                    vc.currentShow = favoriteShows[indexPath.row] as! Show
+//                }
+//            }
+//            self.searchController.active = false
+            
+            
+            
+            
             let vc      = segue.destinationViewController as! DetailViewController
-            if searchController.active && searchController.searchBar.text != "" {
-                vc.currentShow = filteredShowsName[indexPath.row]
-                self.searchController.active = false
+            if segAllFav.selectedSegmentIndex == 0 {
+                if searchController.active && searchController.searchBar.text != "" {
+                    vc.currentShow = DataStore.sharedInstance.getShowByID("\(filteredShowsName[indexPath.row].id)")
+                } else {
+                    vc.currentShow = DataStore.sharedInstance.getShowByID("\((shows[indexPath.row] as! Show).id)")
+                }
             } else {
-                vc.currentShow = shows[indexPath.row] as! Show
+                if searchController.active && searchController.searchBar.text != "" {
+                    vc.currentShow = DataStore.sharedInstance.getShowByID("\(filteredShowsName[indexPath.row].id)")
+                } else {
+                    vc.currentShow = DataStore.sharedInstance.getShowByID("\((favoriteShows[indexPath.row] as! Show).id)")
+                }
             }
+            self.searchController.active = false
         }
     }
     
@@ -218,6 +279,26 @@ class MainViewController: UIViewController, UITableViewDelegate, UITableViewData
         }
         if (currentWindow!.viewWithTag(2) != nil) {
             currentWindow!.viewWithTag(2)!.removeFromSuperview()
+        }
+    }
+    
+    @IBAction func segAllFav(sender: UISegmentedControl) {
+        switch segAllFav.selectedSegmentIndex {
+        case 0:
+            showsForSearch.removeAll()
+            for show in shows {
+                showsForSearch.append(show as! Show)
+            }
+            self.tableView.reloadData()
+        case 1:
+            self.favoriteShows = DataStore.sharedInstance.getFavoritesShow()
+            showsForSearch.removeAll()
+            for show in favoriteShows {
+                showsForSearch.append(show as! Show)
+            }
+            self.tableView.reloadData()
+        default:
+            break
         }
     }
 }

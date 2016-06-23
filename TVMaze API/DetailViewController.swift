@@ -12,6 +12,7 @@ import AlamofireImage
 
 class DetailViewController: UIViewController, UITableViewDataSource, UITableViewDelegate {
 
+    @IBOutlet weak var btnFavorite: UIBarButtonItem!
     @IBOutlet weak var imgHeader:   UIImageView!
     @IBOutlet weak var txtSummary:  UITextView!
     @IBOutlet weak var lblGenres:   UILabel!
@@ -42,6 +43,13 @@ class DetailViewController: UIViewController, UITableViewDataSource, UITableView
     
     func setLayout() {
         navigationItem.title = currentShow.name
+        
+        if currentShow.favorite == true {
+            self.btnFavorite.title = "unfav"
+        } else {
+            self.btnFavorite.title = "fav"
+        }
+        
         self.imgHeader.af_setImageWithURL(NSURL(string: currentShow.imageM!)!)
         self.txtSummary.editable        = true
         self.txtSummary.font            = .systemFontOfSize(15.0)
@@ -154,18 +162,34 @@ class DetailViewController: UIViewController, UITableViewDataSource, UITableView
         return self.seasons.valueForKey("\(self.segSeasons.selectedSegmentIndex + 1)")!.count
     }
     
-    @IBAction func segSeasons(sender: UISegmentedControl) {
-        self.tableView.reloadData()
-    }
-    
     override func prepareForSegue(segue: UIStoryboardSegue, sender: AnyObject?) {
         let cell        = sender as! UITableViewCell
         let indexPath   = tableView.indexPathForCell(cell)!
         if segue.identifier == "toEpisode" {
             let vc = segue.destinationViewController as! EpisodeViewController
-            vc.currentEpisode = ((self.seasons.valueForKey("\(self.segSeasons.selectedSegmentIndex + 1)")!).valueForKey("\(indexPath.row + 1)") as! Episode) 
+            vc.currentEpisode = ((self.seasons.valueForKey("\(self.segSeasons.selectedSegmentIndex + 1)")!).valueForKey("\(indexPath.row + 1)") as! Episode)
         }
     }
+    
+    @IBAction func segSeasons(sender: UISegmentedControl) {
+        self.tableView.reloadData()
+    }
+    
+    @IBAction func btnFavorite(sender: UIBarButtonItem) {
+        let id = currentShow.id
+        if currentShow.favorite == true {
+            if DataStore.sharedInstance.favoriteShowByID("\(id)", favorite: false) {
+                self.currentShow = DataStore.sharedInstance.getShowByID("\(id)")
+                self.btnFavorite.title = "fav"
+            }
+        } else {
+            if DataStore.sharedInstance.favoriteShowByID("\(id)", favorite: true) {
+                self.currentShow = DataStore.sharedInstance.getShowByID("\(id)")
+                self.btnFavorite.title = "unfav"
+            }
+        }
+    }
+    
 }
 
 class EpisodesTableViewCell: UITableViewCell {

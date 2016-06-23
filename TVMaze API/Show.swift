@@ -20,6 +20,7 @@ class DBShow: NSManagedObject {
     @NSManaged var genres:      [String]
     @NSManaged var scheduleD:   [String]
     @NSManaged var scheduleT:   String
+    @NSManaged var favorite:    Bool
     
 }
 
@@ -33,5 +34,6 @@ class Show {
     var genres:     [String]?
     var scheduleD:  [String]?
     var scheduleT:  String?
+    var favorite:   Bool?
     
 }
