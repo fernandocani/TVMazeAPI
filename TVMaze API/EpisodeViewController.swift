@@ -33,7 +33,9 @@ class EpisodeViewController: UIViewController {
     }
 
     func setLayout() {
-        self.imgHeader.af_setImageWithURL(NSURL(string: currentEpisode.imageO!)!)
+        if currentEpisode.imageO! != "null" {
+            self.imgHeader.af_setImageWithURL(NSURL(string: currentEpisode.imageO!)!)
+        }
         
         var seasonName = String()
         if currentEpisode.season! < 10 {

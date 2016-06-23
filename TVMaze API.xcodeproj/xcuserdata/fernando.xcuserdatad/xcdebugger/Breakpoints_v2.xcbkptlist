@@ -10,11 +10,11 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "TVMaze API/DetailViewController.swift"
-            timestampString = "488354634.24498"
+            timestampString = "488356126.664187"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "119"
-            endingLineNumber = "119"
+            startingLineNumber = "125"
+            endingLineNumber = "125"
             landmarkName = "getSeasons()"
             landmarkType = "5">
          </BreakpointContent>

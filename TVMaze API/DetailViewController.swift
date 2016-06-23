@@ -95,6 +95,12 @@ class DetailViewController: UIViewController, UITableViewDataSource, UITableView
                     } else {
                         currentEpisode.imageO = "null"
                     }
+                    let formatter = NSDateFormatter()
+                    formatter.dateFormat = "YY-MM-dd"
+                    let formattedAiredOn: NSDate!
+                    formattedAiredOn = formatter.dateFromString((episode.objectForKey("airdate") as? String)!)
+                    formatter.dateFormat = "dd/MMM/yyyy"
+                    currentEpisode.airedOn = formatter.stringFromDate(formattedAiredOn)
                     self.allEpisodes.addObject(currentEpisode)
                     if !numberOfSeasons.contains(currentEpisode.season!) {
                         numberOfSeasons.append(currentEpisode.season!)
@@ -140,6 +146,7 @@ class DetailViewController: UIViewController, UITableViewDataSource, UITableView
         let currentEpisode = ((self.seasons.valueForKey("\(self.segSeasons.selectedSegmentIndex + 1)")!).valueForKey("\(indexPath.row + 1)") as! Episode)
         cell.lblNumber.text = "\(currentEpisode.number!)."
         cell.lblTitle.text = currentEpisode.name!
+        cell.lblAiredOn.text = currentEpisode.airedOn!
         return cell
     }
     
@@ -159,13 +166,12 @@ class DetailViewController: UIViewController, UITableViewDataSource, UITableView
             vc.currentEpisode = ((self.seasons.valueForKey("\(self.segSeasons.selectedSegmentIndex + 1)")!).valueForKey("\(indexPath.row + 1)") as! Episode) 
         }
     }
-    
-    
 }
 
 class EpisodesTableViewCell: UITableViewCell {
     
     @IBOutlet weak var lblNumber:   UILabel!
     @IBOutlet weak var lblTitle:    UILabel!
+    @IBOutlet weak var lblAiredOn: UILabel!
     
 }

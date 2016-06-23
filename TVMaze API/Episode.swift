@@ -17,5 +17,6 @@ class Episode {
     var summary:    String?
     var imageM:     String?
     var imageO:     String?
+    var airedOn:    String?
     
 }

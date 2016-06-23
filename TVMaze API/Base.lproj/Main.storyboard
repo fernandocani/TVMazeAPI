@@ -164,12 +164,6 @@
                                             <rect key="frame" x="0.0" y="0.0" width="600" height="59.5"/>
                                             <autoresizingMask key="autoresizingMask"/>
                                             <subviews>
-                                                <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="lblTitle" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="1fI-k0-I2B">
-                                                    <rect key="frame" x="56" y="19" width="51.5" height="21"/>
-                                                    <fontDescription key="fontDescription" type="system" pointSize="17"/>
-                                                    <color key="textColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
-                                                    <nil key="highlightedColor"/>
-                                                </label>
                                                 <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="lblNumber" textAlignment="right" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="ePE-ay-gth">
                                                     <rect key="frame" x="8" y="8" width="40" height="43.5"/>
                                                     <constraints>
@@ -179,18 +173,39 @@
                                                     <color key="textColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                                                     <nil key="highlightedColor"/>
                                                 </label>
+                                                <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="lblAiredOn" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="8jK-Kb-9aS">
+                                                    <rect key="frame" x="56" y="29" width="536" height="22.5"/>
+                                                    <fontDescription key="fontDescription" type="system" pointSize="14"/>
+                                                    <color key="textColor" white="0.66666666666666663" alpha="1" colorSpace="calibratedWhite"/>
+                                                    <nil key="highlightedColor"/>
+                                                </label>
+                                                <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="lblTitle" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="1fI-k0-I2B">
+                                                    <rect key="frame" x="56" y="8" width="536" height="28"/>
+                                                    <constraints>
+                                                        <constraint firstAttribute="height" constant="28" id="wbX-38-Br2"/>
+                                                    </constraints>
+                                                    <fontDescription key="fontDescription" type="system" pointSize="18"/>
+                                                    <color key="textColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
+                                                    <nil key="highlightedColor"/>
+                                                </label>
                                             </subviews>
                                             <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
                                             <constraints>
                                                 <constraint firstAttribute="bottomMargin" secondItem="ePE-ay-gth" secondAttribute="bottom" id="5Gb-70-iJ5"/>
                                                 <constraint firstAttribute="leadingMargin" secondItem="ePE-ay-gth" secondAttribute="leading" id="AHZ-wb-yFK"/>
+                                                <constraint firstAttribute="topMargin" secondItem="1fI-k0-I2B" secondAttribute="top" id="FF5-ct-VNn"/>
+                                                <constraint firstAttribute="bottomMargin" secondItem="8jK-Kb-9aS" secondAttribute="bottom" id="GBj-10-OsM"/>
                                                 <constraint firstAttribute="topMargin" secondItem="ePE-ay-gth" secondAttribute="top" id="cUM-qR-lF4"/>
+                                                <constraint firstAttribute="trailingMargin" secondItem="1fI-k0-I2B" secondAttribute="trailing" id="i2d-X7-7Tf"/>
                                                 <constraint firstItem="1fI-k0-I2B" firstAttribute="leading" secondItem="ePE-ay-gth" secondAttribute="trailing" constant="8" id="nfG-ad-AVI"/>
-                                                <constraint firstItem="1fI-k0-I2B" firstAttribute="centerY" secondItem="QBs-YI-cmh" secondAttribute="centerY" id="vuD-l1-VA3"/>
+                                                <constraint firstItem="8jK-Kb-9aS" firstAttribute="top" secondItem="1fI-k0-I2B" secondAttribute="bottom" constant="-7" id="qaS-3W-o4h"/>
+                                                <constraint firstItem="8jK-Kb-9aS" firstAttribute="leading" secondItem="ePE-ay-gth" secondAttribute="trailing" constant="8" id="xvL-7g-bTz"/>
+                                                <constraint firstAttribute="trailingMargin" secondItem="8jK-Kb-9aS" secondAttribute="trailing" id="zYX-YP-tsV"/>
                                             </constraints>
                                         </tableViewCellContentView>
                                         <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
                                         <connections>
+                                            <outlet property="lblAiredOn" destination="8jK-Kb-9aS" id="JVc-ig-Ssx"/>
                                             <outlet property="lblNumber" destination="ePE-ay-gth" id="0Iq-Pp-TY9"/>
                                             <outlet property="lblTitle" destination="1fI-k0-I2B" id="CfB-hX-LV1"/>
                                             <segue destination="QcN-g7-slg" kind="show" identifier="toEpisode" id="vKr-Nm-lMR"/>
