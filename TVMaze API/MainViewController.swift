@@ -11,7 +11,7 @@ import Darwin
 import Alamofire
 import AlamofireImage
 
-class MainViewController: UIViewController, UITableViewDelegate, UITableViewDataSource {
+class MainViewController: UIViewController, UITableViewDelegate, UITableViewDataSource, UISearchBarDelegate {
     
     @IBOutlet weak var tableView: UITableView!
     @IBOutlet weak var segAllFav: UISegmentedControl!
@@ -24,9 +24,12 @@ class MainViewController: UIViewController, UITableViewDelegate, UITableViewData
     var higherIndex         = 0
     var currentPageIndex    = 0
     
-    var filteredShowsName   = [Show]()
-    var showsForSearch      = [Show]()
-    var favoriteShows       = NSMutableArray()
+    var filteredShowsName       = [Show]()
+    var showsForSearch          = [Show]()
+    var originalShowsForSearch  = [Show]()
+    var favoriteShows           = NSMutableArray()
+    var selectedImage           = UIImage()
+    var searching               = false
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -35,6 +38,7 @@ class MainViewController: UIViewController, UITableViewDelegate, UITableViewData
         self.searchController.searchResultsUpdater = self
         self.searchController.hidesNavigationBarDuringPresentation = false
         self.searchController.dimsBackgroundDuringPresentation = false
+        self.searchController.searchBar.delegate = self
         self.searchController.searchBar.sizeToFit()
         self.tableView.tableHeaderView = searchController.searchBar
 //        DataStore.sharedInstance.whipeCD()
@@ -59,8 +63,13 @@ class MainViewController: UIViewController, UITableViewDelegate, UITableViewData
         currentShow.id      = show.objectForKey("id")                               as? Int
         currentShow.name    = show.objectForKey("name")                             as? String
         currentShow.summary = self.cleanSummary((show.objectForKey("summary")       as? String)!)
-        currentShow.imageM  = show.objectForKey("image")!.objectForKey("medium")    as? String
-        currentShow.imageO  = show.objectForKey("image")!.objectForKey("original")  as? String
+        if let imageArray = show.objectForKey("image") as? NSDictionary {
+            currentShow.imageM  = imageArray.objectForKey("medium")                 as? String
+            currentShow.imageO  = imageArray.objectForKey("original")               as? String
+        } else {
+            currentShow.imageM  = "null"
+            currentShow.imageO  = "null"
+        }
         currentShow.genres  = show.objectForKey("genres")!                          as? [String]
         currentShow.scheduleD = show.objectForKey("schedule")!.objectForKey("days") as? [String]
         currentShow.scheduleT = show.objectForKey("schedule")!.objectForKey("time") as? String
@@ -110,6 +119,31 @@ class MainViewController: UIViewController, UITableViewDelegate, UITableViewData
                 }
                 self.currentPageIndex += 1
                 self.loadingData = false
+            case .Failure(let error):
+                print("Request failed with error: \(error)")
+            }
+        }
+    }
+    
+    func searchShows(searchQuery: String) {
+        self.searching = true
+        let url = baseUrl + showsUrlSearch + searchQuery.stringByAddingPercentEncodingWithAllowedCharacters(.URLQueryAllowedCharacterSet())!
+        print(url)
+        Alamofire.request(.GET, url, encoding: .JSON).responseJSON {
+            response in switch response.result {
+            case .Success(let JSON):
+                var count = 0
+                print((JSON as! NSArray).count)
+                for show in (JSON as! NSArray) {
+                    let currentShow = self.getShowData((show as! NSDictionary).objectForKey("show") as! NSDictionary)
+                    if !(self.showsForSearch.contains { return $0.id == currentShow.id }) {
+                        self.showsForSearch.append(currentShow)
+                    }
+                    count += 1
+                    print(count)
+                }
+                self.searching = false
+                self.tableView.reloadData()
             case .Failure(let error):
                 print("Request failed with error: \(error)")
             }
@@ -196,23 +230,20 @@ class MainViewController: UIViewController, UITableViewDelegate, UITableViewData
         }
     }
     
-    var selectedImage = UIImage()
-    
     func filterContentForSearchText(searchText: String, scope: String = "All") {
         filteredShowsName = showsForSearch.filter{ show in
+            if searchText != "" && !searching {
+                self.searchShows(searchText)
+            }
             return show.name!.lowercaseString.containsString(searchText.lowercaseString)
         }
         tableView.reloadData()
     }
     
-    override func prepareForSegue(segue: UIStoryboardSegue, sender: AnyObject?) {
-        let cell                = sender as! MainTableViewCell
-        if segue.identifier == "toDetail" {
-            let vc              = segue.destinationViewController as! DetailViewController
-            vc.currentShow      = DataStore.sharedInstance.getShowByID("\(cell.show.id)")
-            vc.selectedImage    = cell.imgHeader.image!
-            self.searchController.active = false
-        }
+    func searchBar(searchBar: UISearchBar, textDidChange searchText: String) {
+        print("passooooou")
+        searching = false
+        filterContentForSearchText(searchText, scope: "All")
     }
     
     func cleanSummary(summary: String) -> String {
@@ -247,6 +278,16 @@ class MainViewController: UIViewController, UITableViewDelegate, UITableViewData
         }
         if (currentWindow!.viewWithTag(2) != nil) {
             currentWindow!.viewWithTag(2)!.removeFromSuperview()
+        }
+    }
+    
+    override func prepareForSegue(segue: UIStoryboardSegue, sender: AnyObject?) {
+        let cell                = sender as! MainTableViewCell
+        if segue.identifier == "toDetail" {
+            let vc              = segue.destinationViewController as! DetailViewController
+            vc.currentShow      = DataStore.sharedInstance.getShowByID("\(cell.show.id)")
+            vc.selectedImage    = cell.imgHeader.image!
+            self.searchController.active = false
         }
     }
     

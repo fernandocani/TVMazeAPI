@@ -9,11 +9,14 @@
 import UIKit
 
 ///http://api.tvmaze.com
-let baseUrl     = "http://api.tvmaze.com"
+let baseUrl         = "http://api.tvmaze.com"
 ////shows
-let showsUrl    = "/shows"
+let showsUrl        = "/shows"
 ////shows?page=
-let showsUrlPag = "/shows?page="
+let showsUrlPag     = "/shows?page="
+////shows?search=
+let showsUrlSearch  = "/search/shows?q="
+
 ///#2A2A2A
 let blackColor      = "#181818"
 let viewBlackColor  = "#0D0D0D"

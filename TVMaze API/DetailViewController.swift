@@ -26,7 +26,8 @@ class DetailViewController: UIViewController, UITableViewDataSource, UITableView
     let allEpisodes     = NSMutableArray()
     let seasons         = NSMutableDictionary()
     let cellIdentifier  = "episodesCell"
-    
+    let characters      = NSMutableArray()
+    let persons         = NSMutableArray()
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -131,10 +132,36 @@ class DetailViewController: UIViewController, UITableViewDataSource, UITableView
                 self.tableView.hidden   = false
                 self.actLoading.hidden  = true
                 self.tableView.reloadData()
+                self.getCast()
             case .Failure(let error):
                 print("Request failed with error: \(error)")
             }
         }
+    }
+    
+    func getCast() {
+//        Alamofire.request(.GET, baseUrl + showsUrl + "/\(currentShow.id)/cast", encoding: .JSON).responseJSON {
+//            response in switch response.result {
+//            case .Success(let JSON):
+//                for currentCast in (JSON as! NSArray) {
+//                    print(currentCast)
+//                    let currentCharacter    = currentCast.objectForKey("character") as! NSDictionary
+//                    let character = Person()
+//                    character.id            = currentCharacter.objectForKey("id")                               as! Int
+//                    character.name          = currentCharacter.objectForKey("name")                             as? String
+//                    character.imageO        = currentCharacter.objectForKey("image")!.objectForKey("original")  as? String
+//                    self.characters.addObject(character)
+//                    let currentPerson       = currentCast.objectForKey("person")    as! NSDictionary
+//                    let person = Person()
+//                    person.id               = currentPerson.objectForKey("id")                               as! Int
+//                    person.name             = currentPerson.objectForKey("name")                             as? String
+//                    person.imageO           = currentPerson.objectForKey("image")!.objectForKey("original")  as? String
+//                    self.persons.addObject(person)
+//                }
+//            case .Failure(let error):
+//                print("Request failed with error: \(error)")
+//            }
+//        }
     }
     
     func cleanSummary(summary: String) -> String {

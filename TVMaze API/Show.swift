@@ -37,3 +37,11 @@ class Show {
     var favorite:   Bool?
     
 }
+
+class Person {
+    
+    var id:         Int!
+    var name:       String!
+    var imageO:     String?
+    
+}

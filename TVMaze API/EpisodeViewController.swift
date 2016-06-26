@@ -58,4 +58,6 @@ class EpisodeViewController: UIViewController {
         self.txtSummary.editable        = false
         self.txtSummary.backgroundColor = UIColor(hex: viewBlackColor)
     }
+    
+    //http://api.tvmaze.com/shows/1/cast
 }
