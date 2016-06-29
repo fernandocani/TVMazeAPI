@@ -4,7 +4,9 @@
         <deployment identifier="iOS"/>
         <development version="7000" identifier="xcode"/>
         <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="10085"/>
+        <capability name="Aspect ratio constraints" minToolsVersion="5.1"/>
         <capability name="Constraints to layout margins" minToolsVersion="6.0"/>
+        <capability name="Constraints with non-1.0 multipliers" minToolsVersion="5.1"/>
     </dependencies>
     <scenes>
         <!--View Controller-->
@@ -20,17 +22,26 @@
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
                             <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="TVMaze API" textAlignment="center" lineBreakMode="tailTruncation" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="eSD-YW-eFn">
-                                <rect key="frame" x="20" y="120" width="560" height="50.5"/>
-                                <fontDescription key="fontDescription" type="system" pointSize="42"/>
+                                <rect key="frame" x="20" y="520.5" width="560" height="59"/>
+                                <fontDescription key="fontDescription" name="OriyaSangamMN" family="Oriya Sangam MN" pointSize="42"/>
                                 <color key="textColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                                 <nil key="highlightedColor"/>
                             </label>
+                            <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="TVMaze Icon" translatesAutoresizingMaskIntoConstraints="NO" id="eDz-mu-v1M">
+                                <rect key="frame" x="90" y="90" width="420" height="420"/>
+                                <constraints>
+                                    <constraint firstAttribute="width" secondItem="eDz-mu-v1M" secondAttribute="height" multiplier="1:1" id="WgN-PF-Peq"/>
+                                </constraints>
+                            </imageView>
                         </subviews>
-                        <color key="backgroundColor" white="0.33333333333333331" alpha="1" colorSpace="calibratedWhite"/>
+                        <color key="backgroundColor" red="0.0" green="0.47058823529411764" blue="0.43137254901960786" alpha="1" colorSpace="calibratedRGB"/>
                         <constraints>
                             <constraint firstAttribute="trailingMargin" secondItem="eSD-YW-eFn" secondAttribute="trailing" id="5Db-BH-vvl"/>
+                            <constraint firstItem="eDz-mu-v1M" firstAttribute="centerX" secondItem="Ze5-6b-2t3" secondAttribute="centerX" id="765-1h-iwx"/>
+                            <constraint firstItem="xb3-aO-Qok" firstAttribute="top" secondItem="eSD-YW-eFn" secondAttribute="bottom" constant="20.5" id="BRL-G2-gc9"/>
                             <constraint firstAttribute="leadingMargin" secondItem="eSD-YW-eFn" secondAttribute="leading" id="NSn-io-tuC"/>
-                            <constraint firstItem="eSD-YW-eFn" firstAttribute="top" secondItem="Llm-lL-Icb" secondAttribute="bottom" constant="100" id="kRY-9Y-vs3"/>
+                            <constraint firstItem="eDz-mu-v1M" firstAttribute="width" secondItem="Ze5-6b-2t3" secondAttribute="width" multiplier="0.7" id="U09-Qj-bOv"/>
+                            <constraint firstItem="eDz-mu-v1M" firstAttribute="centerY" secondItem="Ze5-6b-2t3" secondAttribute="centerY" id="U3J-oV-Sgt"/>
                         </constraints>
                     </view>
                 </viewController>
@@ -39,4 +50,7 @@
             <point key="canvasLocation" x="53" y="375"/>
         </scene>
     </scenes>
+    <resources>
+        <image name="TVMaze Icon" width="1024" height="1024"/>
+    </resources>
 </document>

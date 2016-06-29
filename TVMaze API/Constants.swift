@@ -17,10 +17,14 @@ let showsUrlPag     = "/shows?page="
 ////shows?search=
 let showsUrlSearch  = "/search/shows?q="
 
-///#2A2A2A
+///#181818
 let blackColor      = UIColor(hex: "#181818")
+///#0D0D0D
 let viewBlackColor  = UIColor(hex: "#0D0D0D")
+///#F1C40F
 let yellowColor     = UIColor(hex: "#F1C40F")
+///#00786E
+let lightGreenColor = UIColor(hex: "#00786E")
 
 
 // Screen Size

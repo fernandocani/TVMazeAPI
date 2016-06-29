@@ -54,13 +54,16 @@ class DetailViewController: UIViewController, UITableViewDataSource, UITableView
         navigationItem.title = currentShow.name
         self.setFav(currentShow.favorite!)
         
-        self.imgHeader.image = selectedImage//af_setImageWithURL(NSURL(string: currentShow.imageM!)!)
+        self.imgHeader.image            = selectedImage
         self.txtSummary.editable        = true
         self.txtSummary.font            = .systemFontOfSize(15.0)
-        self.txtSummary.text            = currentShow.summary
+        self.txtSummary.text            = "No summary :("
+        if currentShow.summary != "" {
+            self.txtSummary.text = currentShow.summary
+        }
         self.txtSummary.editable        = false
         self.txtSummary.backgroundColor = viewBlackColor
-        self.lblGenres.text = ""
+        self.lblGenres.text             = ""
         
         if currentShow.genres != nil {
             for item in currentShow.genres! {
@@ -88,6 +91,10 @@ class DetailViewController: UIViewController, UITableViewDataSource, UITableView
         self.tableView.hidden   = true
         self.actLoading.hidden  = false
         self.tableView.backgroundColor = UIColor.clearColor()
+        
+        self.segSeasons.tintColor   = lightGreenColor
+        self.segSeasons.setTitleTextAttributes([NSForegroundColorAttributeName: UIColor.whiteColor()], forState: .Selected)
+        self.segSeasons.setTitleTextAttributes([NSForegroundColorAttributeName: UIColor.whiteColor()], forState: .Normal)
     }
     
     func getSeasons() {
@@ -131,36 +138,10 @@ class DetailViewController: UIViewController, UITableViewDataSource, UITableView
                 self.actLoading.hidden  = true
                 self.getCurrentSeason()
                 self.tableView.reloadData()
-                self.getCast()
             case .Failure(let error):
                 print("Request failed with error: \(error)")
             }
         }
-    }
-    
-    func getCast() {
-//        Alamofire.request(.GET, baseUrl + showsUrl + "/\(currentShow.id)/cast", encoding: .JSON).responseJSON {
-//            response in switch response.result {
-//            case .Success(let JSON):
-//                for currentCast in (JSON as! NSArray) {
-//                    print(currentCast)
-//                    let currentCharacter    = currentCast.objectForKey("character") as! NSDictionary
-//                    let character = Person()
-//                    character.id            = currentCharacter.objectForKey("id")                               as! Int
-//                    character.name          = currentCharacter.objectForKey("name")                             as? String
-//                    character.imageO        = currentCharacter.objectForKey("image")!.objectForKey("original")  as? String
-//                    self.characters.addObject(character)
-//                    let currentPerson       = currentCast.objectForKey("person")    as! NSDictionary
-//                    let person = Person()
-//                    person.id               = currentPerson.objectForKey("id")                               as! Int
-//                    person.name             = currentPerson.objectForKey("name")                             as? String
-//                    person.imageO           = currentPerson.objectForKey("image")!.objectForKey("original")  as? String
-//                    self.persons.addObject(person)
-//                }
-//            case .Failure(let error):
-//                print("Request failed with error: \(error)")
-//            }
-//        }
     }
     
     func cleanSummary(summary: String) -> String {
@@ -179,9 +160,9 @@ class DetailViewController: UIViewController, UITableViewDataSource, UITableView
     
     func tableView(tableView: UITableView, cellForRowAtIndexPath indexPath: NSIndexPath) -> UITableViewCell {
         let cell = tableView.dequeueReusableCellWithIdentifier(cellIdentifier, forIndexPath: indexPath) as! EpisodesTableViewCell
-//        let currentEpisode = ((self.seasons.valueForKey("\(self.segSeasons.selectedSegmentIndex + 1)")!).valueForKey("\(indexPath.row + 1)") as! Episode)
         let currentEpisode = currentSeason[indexPath.row]
         cell.lblNumber.text = "\(currentEpisode.number!)."
+        cell.lblNumber.textColor = lightGreenColor
         cell.lblTitle.text = currentEpisode.name!
         cell.lblAiredOn.text = currentEpisode.airedOn!
         return cell

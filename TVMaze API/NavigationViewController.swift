@@ -13,7 +13,7 @@ class NavigationViewController: UINavigationController {
         super.viewDidLoad()
         self.navigationBar.setBackgroundImage(UIImage(), forBarMetrics: UIBarMetrics.Default)
         self.navigationBar.backgroundColor      = blackColor
-        self.navigationBar.tintColor            = UIColor.whiteColor()
-        self.navigationBar.titleTextAttributes  = [NSForegroundColorAttributeName: UIColor.whiteColor()]
+        self.navigationBar.tintColor            = lightGreenColor
+        self.navigationBar.titleTextAttributes  = [NSForegroundColorAttributeName: lightGreenColor]
     }
 }

@@ -47,7 +47,7 @@ class MainViewController: UIViewController, UITableViewDelegate, UITableViewData
         } else {
             self.getShows()
         }
-        
+        self.updateFavorite()
     }
 
     override func didReceiveMemoryWarning() {
@@ -76,6 +76,7 @@ class MainViewController: UIViewController, UITableViewDelegate, UITableViewData
                 self.tableView.reloadData()
             }
         }
+        self.updateFavorite()
     }
     
     func positionForBar(bar: UIBarPositioning) -> UIBarPosition {
@@ -92,6 +93,15 @@ class MainViewController: UIViewController, UITableViewDelegate, UITableViewData
         }
         self.toolbar.backgroundColor    = blackColor
         self.segAllFav.frame.size.width = screenWidth * 0.9
+        self.segAllFav.removeAllSegments()
+        self.segAllFav.insertSegmentWithTitle("all",                atIndex: 0, animated: false)
+        self.segAllFav.insertSegmentWithTitle("\u{2605} favorites", atIndex: 1, animated: false)
+        self.segAllFav.selectedSegmentIndex = 0
+        self.segAllFav.tintColor        = lightGreenColor
+        self.segAllFav.setTitleTextAttributes([NSForegroundColorAttributeName: UIColor.whiteColor()],   	forState: .Normal)
+        self.segAllFav.setTitleTextAttributes([NSForegroundColorAttributeName: UIColor.whiteColor()],       forState: .Selected)
+        self.segAllFav.setTitleTextAttributes([NSForegroundColorAttributeName: UIColor.darkGrayColor()],    forState: .Disabled)
+        
         self.view.backgroundColor       = viewBlackColor
         self.tableView.backgroundColor  = UIColor.clearColor()
         self.searchController.searchResultsUpdater = self
@@ -219,7 +229,7 @@ class MainViewController: UIViewController, UITableViewDelegate, UITableViewData
         if show.favorite == true {
             cell.lblTitle.textColor = yellowColor
         } else {
-            cell.lblTitle.textColor = UIColor.whiteColor()
+            cell.lblTitle.textColor = lightGreenColor
         }
         return cell
     }
@@ -327,6 +337,7 @@ class MainViewController: UIViewController, UITableViewDelegate, UITableViewData
                 self.tableView.deleteRowsAtIndexPaths([indexPath], withRowAnimation: UITableViewRowAnimation.Automatic)
                 self.tableView.endUpdates()
             }
+            self.updateFavorite()
         })
         favAction.backgroundColor = UIColor.grayColor()
         return [favAction]
@@ -386,16 +397,25 @@ class MainViewController: UIViewController, UITableViewDelegate, UITableViewData
         }
     }
     
+    // MARK: Favorites
+    
     func favChange(currentShow: Show) {
-        let id = "\(currentShow.id)"
-        if currentShow.favorite == true {
-            if DataStore.sharedInstance.favoriteShowByID(id, favorite: false) {
-                //                self.currentShow = DataStore.sharedInstance.getShowByID("\(id)")
-            }
+        if DataStore.sharedInstance.favoriteShowByID("\(currentShow.id)", favorite: !(currentShow.favorite!)) {
+            
+        }
+    }
+    
+    func updateFavorite() {
+        if DataStore.sharedInstance.getFavoritesShow().count > 0 {
+            self.segAllFav.setEnabled(true, forSegmentAtIndex: 1)
         } else {
-            if DataStore.sharedInstance.favoriteShowByID(id, favorite: true) {
-                //                self.currentShow = DataStore.sharedInstance.getShowByID("\(id)")
+            self.segAllFav.setEnabled(false, forSegmentAtIndex: 1)
+            self.segAllFav.selectedSegmentIndex = 0
+            self.showsForSearch.removeAll()
+            for show in shows {
+                self.showsForSearch.append(show as! Show)
             }
+            self.tableView.reloadData()
         }
     }
     
@@ -436,6 +456,7 @@ class MainViewController: UIViewController, UITableViewDelegate, UITableViewData
         default:
             break
         }
+        self.updateFavorite()
     }
 }
 

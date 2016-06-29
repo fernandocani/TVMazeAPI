@@ -13,6 +13,7 @@ import AlamofireImage
 class EpisodeViewController: UIViewController {
 
     @IBOutlet weak var imgHeader:   UIImageView!
+    @IBOutlet weak var imgActivity: UIActivityIndicatorView!
     @IBOutlet weak var lblTitle:    UILabel!
     @IBOutlet weak var txtSummary:  UITextView!
     
@@ -35,6 +36,9 @@ class EpisodeViewController: UIViewController {
     func setLayout() {
         if currentEpisode.imageO! != "null" {
             self.imgHeader.af_setImageWithURL(NSURL(string: currentEpisode.imageO!)!)
+        } else {
+            self.imgHeader.hidden   = true
+            self.imgActivity.hidden = true
         }
         
         var seasonName = String()
@@ -54,7 +58,10 @@ class EpisodeViewController: UIViewController {
         
         self.txtSummary.editable        = true
         self.txtSummary.font            = .systemFontOfSize(15.0)
-        self.txtSummary.text            = currentEpisode.summary!
+        self.txtSummary.text            = "No summary :("
+        if currentEpisode.summary != "" {
+            self.txtSummary.text        = currentEpisode.summary
+        }
         self.txtSummary.editable        = false
         self.txtSummary.backgroundColor = viewBlackColor
     }
