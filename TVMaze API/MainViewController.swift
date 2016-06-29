@@ -110,6 +110,8 @@ class MainViewController: UIViewController, UITableViewDelegate, UITableViewData
         self.searchController.searchBar.delegate = self
         self.searchController.searchBar.searchBarStyle = .Minimal
         self.searchController.searchBar.sizeToFit()
+        (UIBarButtonItem.appearanceWhenContainedInInstancesOfClasses([UISearchBar.self])).tintColor = lightGreenColor
+
         self.tableView.tableHeaderView  = searchController.searchBar
     }
     

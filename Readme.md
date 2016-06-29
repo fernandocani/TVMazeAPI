@@ -43,8 +43,11 @@ Caminhos ultilizados:
     Tabela de todas as séries é ordenada pelo ID retornado da API, os 'Favoritos' são por ordem alfabética.
     Por algum motivo, enquanto acontece o scroll, as imagens ficam 'presas' com imagens de outras séries, mas quando para em algum lugar, ele se atualiza.
 
+
 Pods ultilizados:
 Alamofire:
   -> Conexão com a API.
 AlamofireImage
   -> Ultilizado para download assíncrono das imagens.
+
+(Não foram ultulizados os PODs por meio de Podfile por motivo de: Preferência pessoal, prefiro baixar o POD e ultilizar na versão atual, assim não corro o risco de algum problema por incompatibilidade de versão, arquivos que vão ou não. Mas sei ultilizar o método tradicional)
