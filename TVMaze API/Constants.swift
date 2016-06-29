@@ -18,8 +18,14 @@ let showsUrlPag     = "/shows?page="
 let showsUrlSearch  = "/search/shows?q="
 
 ///#2A2A2A
-let blackColor      = "#181818"
-let viewBlackColor  = "#0D0D0D"
+let blackColor      = UIColor(hex: "#181818")
+let viewBlackColor  = UIColor(hex: "#0D0D0D")
+let yellowColor     = UIColor(hex: "#F1C40F")
+
+
+// Screen Size
+let screenWidth     = UIScreen.mainScreen().bounds.size.width
+let screenHeight    = UIScreen.mainScreen().bounds.size.height
 
 extension UIColor {
     public convenience init(hex: String) {

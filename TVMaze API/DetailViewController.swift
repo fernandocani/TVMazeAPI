@@ -12,7 +12,6 @@ import AlamofireImage
 
 class DetailViewController: UIViewController, UITableViewDataSource, UITableViewDelegate {
 
-    @IBOutlet weak var btnFavorite: UIBarButtonItem!
     @IBOutlet weak var imgHeader:   UIImageView!
     @IBOutlet weak var txtSummary:  UITextView!
     @IBOutlet weak var lblGenres:   UILabel!
@@ -31,7 +30,7 @@ class DetailViewController: UIViewController, UITableViewDataSource, UITableView
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        self.view.backgroundColor = UIColor(hex: viewBlackColor)
+        self.view.backgroundColor = viewBlackColor
         self.setLayout()
         self.getSeasons()
     }
@@ -44,21 +43,23 @@ class DetailViewController: UIViewController, UITableViewDataSource, UITableView
         super.didReceiveMemoryWarning()
     }
     
+    func setFav(fav: Bool) {
+        var imageName = ""
+        if fav { imageName = "fav" } else { imageName = "unfav" }
+        let favImage = UIImage(named: imageName)!.imageWithRenderingMode(UIImageRenderingMode.AlwaysOriginal)
+        self.navigationItem.rightBarButtonItem = UIBarButtonItem(image: favImage, style: .Plain, target: self, action: #selector(DetailViewController.favChange))
+    }
+    
     func setLayout() {
         navigationItem.title = currentShow.name
-        
-        if currentShow.favorite == true {
-            self.btnFavorite.title = "unfav"
-        } else {
-            self.btnFavorite.title = "fav"
-        }
+        self.setFav(currentShow.favorite!)
         
         self.imgHeader.image = selectedImage//af_setImageWithURL(NSURL(string: currentShow.imageM!)!)
         self.txtSummary.editable        = true
         self.txtSummary.font            = .systemFontOfSize(15.0)
         self.txtSummary.text            = currentShow.summary
         self.txtSummary.editable        = false
-        self.txtSummary.backgroundColor = UIColor(hex: viewBlackColor)
+        self.txtSummary.backgroundColor = viewBlackColor
         self.lblGenres.text = ""
         
         if currentShow.genres != nil {
@@ -90,7 +91,9 @@ class DetailViewController: UIViewController, UITableViewDataSource, UITableView
     }
     
     func getSeasons() {
-        Alamofire.request(.GET, baseUrl + showsUrl + "/\(currentShow.id)/episodes", encoding: .JSON).responseJSON {
+        let url = baseUrl + showsUrl + "/\(currentShow.id)" + "/episodes"
+        print(url)
+        Alamofire.request(.GET, url, encoding: .JSON).responseJSON {
             response in switch response.result {
             case .Success(let JSON):
                 var numberOfSeasons = [Int]()
@@ -106,12 +109,7 @@ class DetailViewController: UIViewController, UITableViewDataSource, UITableView
                     } else {
                         currentEpisode.imageO = "null"
                     }
-                    let formatter = NSDateFormatter()
-                    formatter.dateFormat = "YY-MM-dd"
-                    let formattedAiredOn: NSDate!
-                    formattedAiredOn = formatter.dateFromString((episode.objectForKey("airdate") as? String)!)
-                    formatter.dateFormat = "dd/MMM/yyyy"
-                    currentEpisode.airedOn = formatter.stringFromDate(formattedAiredOn)
+                    currentEpisode.airedOn = self.convertDateFormater((episode.objectForKey("airstamp") as? String)!)
                     self.allEpisodes.addObject(currentEpisode)
                     if !numberOfSeasons.contains(currentEpisode.season!) {
                         numberOfSeasons.append(currentEpisode.season!)
@@ -131,6 +129,7 @@ class DetailViewController: UIViewController, UITableViewDataSource, UITableView
                 self.segSeasons.hidden  = false
                 self.tableView.hidden   = false
                 self.actLoading.hidden  = true
+                self.getCurrentSeason()
                 self.tableView.reloadData()
                 self.getCast()
             case .Failure(let error):
@@ -180,7 +179,8 @@ class DetailViewController: UIViewController, UITableViewDataSource, UITableView
     
     func tableView(tableView: UITableView, cellForRowAtIndexPath indexPath: NSIndexPath) -> UITableViewCell {
         let cell = tableView.dequeueReusableCellWithIdentifier(cellIdentifier, forIndexPath: indexPath) as! EpisodesTableViewCell
-        let currentEpisode = ((self.seasons.valueForKey("\(self.segSeasons.selectedSegmentIndex + 1)")!).valueForKey("\(indexPath.row + 1)") as! Episode)
+//        let currentEpisode = ((self.seasons.valueForKey("\(self.segSeasons.selectedSegmentIndex + 1)")!).valueForKey("\(indexPath.row + 1)") as! Episode)
+        let currentEpisode = currentSeason[indexPath.row]
         cell.lblNumber.text = "\(currentEpisode.number!)."
         cell.lblTitle.text = currentEpisode.name!
         cell.lblAiredOn.text = currentEpisode.airedOn!
@@ -188,7 +188,7 @@ class DetailViewController: UIViewController, UITableViewDataSource, UITableView
     }
     
     func tableView(tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return self.seasons.valueForKey("\(self.segSeasons.selectedSegmentIndex + 1)")!.count
+        return self.currentSeason.count
     }
     
     override func prepareForSegue(segue: UIStoryboardSegue, sender: AnyObject?) {
@@ -200,23 +200,57 @@ class DetailViewController: UIViewController, UITableViewDataSource, UITableView
         }
     }
     
+    var currentSeason = [Episode]()
+    
     @IBAction func segSeasons(sender: UISegmentedControl) {
+        self.getCurrentSeason()
         self.tableView.reloadData()
+        self.tableView.setContentOffset(CGPointZero, animated: true)
+        self.tableView.scrollsToTop = true
     }
     
-    @IBAction func btnFavorite(sender: UIBarButtonItem) {
+    func favChange() {
         let id = currentShow.id
         if currentShow.favorite == true {
             if DataStore.sharedInstance.favoriteShowByID("\(id)", favorite: false) {
                 self.currentShow = DataStore.sharedInstance.getShowByID("\(id)")
-                self.btnFavorite.title = "fav"
             }
         } else {
             if DataStore.sharedInstance.favoriteShowByID("\(id)", favorite: true) {
                 self.currentShow = DataStore.sharedInstance.getShowByID("\(id)")
-                self.btnFavorite.title = "unfav"
             }
         }
+        self.setFav(self.currentShow.favorite!)
+    }
+    
+    func getCurrentSeason() {
+        if currentSeason.count > 0 {
+            currentSeason.removeAll()
+        }
+        let season = (self.seasons.valueForKey("\(self.segSeasons.selectedSegmentIndex + 1)")!) as! NSDictionary
+        let seasonDict = season as Dictionary
+        let sortedKeys = seasonDict.keys.sort( { (seasonDict[$0] as! Episode).number < (seasonDict[$1] as! Episode).number } )
+        
+        for value in 0...(sortedKeys.count - 1) {
+            currentSeason.append(season.valueForKey("\(sortedKeys[value])") as! Episode)
+        }
+    }
+    
+    func convertDateFormater(date: String) -> String {
+        let dateFormatter = NSDateFormatter()
+        dateFormatter.dateFormat = "yyyy-MM-dd'T'HH:mm:ssSSSZ"
+        //        dateFormatter.timeZone = NSTimeZone(name: "UTC")
+        
+        guard let date = dateFormatter.dateFromString(date) else {
+            //            assert(false, "no date from string")
+            return "TBA"
+        }
+        
+        dateFormatter.dateFormat = "dd/MMM/yyyy"
+        //        dateFormatter.timeZone = NSTimeZone(name: "UTC")
+        let timeStamp = dateFormatter.stringFromDate(date)
+        
+        return timeStamp
     }
     
 }

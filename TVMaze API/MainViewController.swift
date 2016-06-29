@@ -11,36 +11,31 @@ import Darwin
 import Alamofire
 import AlamofireImage
 
-class MainViewController: UIViewController, UITableViewDelegate, UITableViewDataSource, UISearchBarDelegate {
+class MainViewController: UIViewController, UITableViewDelegate, UITableViewDataSource, UISearchBarDelegate, UIToolbarDelegate {
     
-    @IBOutlet weak var tableView: UITableView!
-    @IBOutlet weak var segAllFav: UISegmentedControl!
+    @IBOutlet weak var tableView:   UITableView!
+    @IBOutlet weak var segAllFav:   UISegmentedControl!
+    @IBOutlet weak var toolbar:     UIToolbar!
     
     let searchController    = UISearchController(searchResultsController: nil)
     
     let cellIdentifier      = "mainCell"
     var shows               = NSMutableArray()
     var loadingData         = false
-    var higherIndex         = 0
     var currentPageIndex    = 0
     
     var filteredShowsName       = [Show]()
     var showsForSearch          = [Show]()
-    var originalShowsForSearch  = [Show]()
+    var currentShowToSegue:     Show!
     var favoriteShows           = NSMutableArray()
     var selectedImage           = UIImage()
     var searching               = false
     
+    // MARK: Layout
+    
     override func viewDidLoad() {
         super.viewDidLoad()
-        self.view.backgroundColor = UIColor(hex: viewBlackColor)
-        self.tableView.backgroundColor = UIColor.clearColor()
-        self.searchController.searchResultsUpdater = self
-        self.searchController.hidesNavigationBarDuringPresentation = false
-        self.searchController.dimsBackgroundDuringPresentation = false
-        self.searchController.searchBar.delegate = self
-        self.searchController.searchBar.sizeToFit()
-        self.tableView.tableHeaderView = searchController.searchBar
+        self.setLayout()
 //        DataStore.sharedInstance.whipeCD()
         if DataStore.sharedInstance.hasShow() {
             self.populateArray()
@@ -52,12 +47,64 @@ class MainViewController: UIViewController, UITableViewDelegate, UITableViewData
         } else {
             self.getShows()
         }
+        
     }
 
     override func didReceiveMemoryWarning() {
         super.didReceiveMemoryWarning()
     }
-   
+
+    override func viewWillAppear(animated: Bool) {
+        if currentShowToSegue != nil {
+            let currentShow = DataStore.sharedInstance.getShowByID("\(currentShowToSegue.id)")
+            if currentShowToSegue.favorite != currentShow.favorite {
+                var count1 = 0
+                for show1 in shows {
+                    if (show1 as! Show).id == currentShow.id {
+                        self.shows.removeObjectAtIndex(count1)
+                        self.shows.insertObject(currentShow, atIndex: count1)
+                        break
+                    }
+                    count1 += 1
+                }
+                favoriteShows.removeAllObjects()
+                for show2 in shows {
+                    if (show2 as! Show).favorite == true {
+                        self.favoriteShows.addObject((show2 as! Show))
+                    }
+                }
+                self.tableView.reloadData()
+            }
+        }
+    }
+    
+    func positionForBar(bar: UIBarPositioning) -> UIBarPosition {
+        return UIBarPosition.Top
+    }
+    
+    func setLayout() {
+        for parent in self.navigationController!.navigationBar.subviews {
+            for childView in parent.subviews {
+                if (childView is UIImageView) {
+                    childView.removeFromSuperview()
+                }
+            }
+        }
+        self.toolbar.backgroundColor    = blackColor
+        self.segAllFav.frame.size.width = screenWidth * 0.9
+        self.view.backgroundColor       = viewBlackColor
+        self.tableView.backgroundColor  = UIColor.clearColor()
+        self.searchController.searchResultsUpdater = self
+        self.searchController.hidesNavigationBarDuringPresentation = false
+        self.searchController.dimsBackgroundDuringPresentation = false
+        self.searchController.searchBar.delegate = self
+        self.searchController.searchBar.searchBarStyle = .Minimal
+        self.searchController.searchBar.sizeToFit()
+        self.tableView.tableHeaderView  = searchController.searchBar
+    }
+    
+    // MARK: Connection
+    
     func getShowData(show: NSDictionary) -> Show {
         let currentShow = Show()
         currentShow.id      = show.objectForKey("id")                               as? Int
@@ -79,7 +126,9 @@ class MainViewController: UIViewController, UITableViewDelegate, UITableViewData
     
     func getShows() {
         self.createLoading()
-        Alamofire.request(.GET, baseUrl + showsUrl, encoding: .JSON).responseJSON {
+        let url = baseUrl + showsUrl
+        print(url)
+        Alamofire.request(.GET, url, encoding: .JSON).responseJSON {
             response in switch response.result {
             case .Success(let JSON):
                 for show in (JSON as! NSArray) {
@@ -102,7 +151,9 @@ class MainViewController: UIViewController, UITableViewDelegate, UITableViewData
     }
     
     func getMoreShows(index: Int) {
-        Alamofire.request(.GET, baseUrl + showsUrlPag + "\(index)", encoding: .JSON).responseJSON {
+        let url = baseUrl + showsUrlPag + "\(index)"
+        print(url)
+        Alamofire.request(.GET, url, encoding: .JSON).responseJSON {
             response in switch response.result {
             case .Success(let JSON):
                 for show in (JSON as! NSArray) {
@@ -150,20 +201,13 @@ class MainViewController: UIViewController, UITableViewDelegate, UITableViewData
         }
     }
     
+    // MARK: Populate
+    
     func populateArray() {
         shows = DataStore.sharedInstance.getShows()
-        for show in shows {
-            if (show as! Show).id > self.higherIndex {
-                self.higherIndex = (show as! Show).id!
-            }
-        }
         self.tableView.reloadData()
         self.tableView.scrollToRowAtIndexPath(NSIndexPath(forRow: 0, inSection: 0), atScrollPosition: .Top, animated: false)
         self.removeLoading()
-    }
-    
-    func numberOfSectionsInTableView(tableView: UITableView) -> Int {
-        return 1
     }
     
     func populateCell(indexPath: NSIndexPath, show: Show) -> MainTableViewCell {
@@ -172,6 +216,11 @@ class MainViewController: UIViewController, UITableViewDelegate, UITableViewData
         cell.lblSummary.text    = show.summary!
         cell.imgHeader.af_setImageWithURL(NSURL(string: show.imageM!)!)
         cell.show               = show
+        if show.favorite == true {
+            cell.lblTitle.textColor = yellowColor
+        } else {
+            cell.lblTitle.textColor = UIColor.whiteColor()
+        }
         return cell
     }
     
@@ -183,10 +232,21 @@ class MainViewController: UIViewController, UITableViewDelegate, UITableViewData
                 cell.lblTitle.text      = item.name!
                 cell.lblSummary.text    = item.summary!
                 cell.imgHeader.af_setImageWithURL(NSURL(string: item.imageM!)!)
+                if item.favorite == true {
+                    cell.lblTitle.textColor = yellowColor
+                } else {
+                    cell.lblTitle.textColor = UIColor.whiteColor()
+                }
                 cell.show               = item
             }
         }
         return cell
+    }
+    
+    // MARK: Table View
+    
+    func numberOfSectionsInTableView(tableView: UITableView) -> Int {
+        return 1
     }
     
     func tableView(tableView: UITableView, cellForRowAtIndexPath indexPath: NSIndexPath) -> UITableViewCell {
@@ -230,6 +290,50 @@ class MainViewController: UIViewController, UITableViewDelegate, UITableViewData
         }
     }
     
+    func tableView(tableView: UITableView, editActionsForRowAtIndexPath indexPath: NSIndexPath) -> [UITableViewRowAction]? {
+        let currentShow = (tableView.cellForRowAtIndexPath(indexPath) as! MainTableViewCell).show
+        var buttonTitle = ""
+        if currentShow.favorite == true {
+            buttonTitle = "\u{2605}\n   favorited"
+        } else {
+            buttonTitle = "\u{2606}\n unfavorited"
+        }
+        let favAction = UITableViewRowAction(style: .Default, title: buttonTitle, handler: { action, indexpath in
+            self.favChange(currentShow)
+            if self.segAllFav.selectedSegmentIndex == 0 {
+                self.shows.removeObjectAtIndex(indexPath.row)
+                self.shows.insertObject(DataStore.sharedInstance.getShowByID("\(currentShow.id)"), atIndex: indexPath.row)
+                self.tableView.setEditing(false, animated: true)
+                self.tableView.reloadRowsAtIndexPaths([indexPath], withRowAnimation: .None)
+            } else {
+                for value1 in 0...(self.favoriteShows.count - 1) {
+                    if DataStore.sharedInstance.getShowByID("\((self.favoriteShows[value1] as! Show).id)").favorite == false {
+                        var count: Int = 0
+                        for current in self.shows {
+                            if (current as! Show).id == (self.favoriteShows[value1] as! Show).id {
+                                self.shows.removeObjectAtIndex(count)
+                                self.shows.insertObject(DataStore.sharedInstance.getShowByID("\(currentShow.id)"), atIndex: count)
+                                break
+                            } else {
+                                count += 1
+                            }
+                        }
+                        self.favoriteShows.removeObjectAtIndex(value1)
+                        break
+                    }
+                }
+                self.tableView.setEditing(false, animated: true)
+                self.tableView.beginUpdates()
+                self.tableView.deleteRowsAtIndexPaths([indexPath], withRowAnimation: UITableViewRowAnimation.Automatic)
+                self.tableView.endUpdates()
+            }
+        })
+        favAction.backgroundColor = UIColor.grayColor()
+        return [favAction]
+    }
+    
+    // MARK: Search
+    
     func filterContentForSearchText(searchText: String, scope: String = "All") {
         filteredShowsName = showsForSearch.filter{ show in
             if searchText != "" && !searching {
@@ -241,10 +345,11 @@ class MainViewController: UIViewController, UITableViewDelegate, UITableViewData
     }
     
     func searchBar(searchBar: UISearchBar, textDidChange searchText: String) {
-        print("passooooou")
         searching = false
         filterContentForSearchText(searchText, scope: "All")
     }
+    
+    // MARK: Aux
     
     func cleanSummary(summary: String) -> String {
         let regex = try! NSRegularExpression(pattern: "<.*?>", options: [.CaseInsensitive])
@@ -281,15 +386,37 @@ class MainViewController: UIViewController, UITableViewDelegate, UITableViewData
         }
     }
     
-    override func prepareForSegue(segue: UIStoryboardSegue, sender: AnyObject?) {
-        let cell                = sender as! MainTableViewCell
-        if segue.identifier == "toDetail" {
-            let vc              = segue.destinationViewController as! DetailViewController
-            vc.currentShow      = DataStore.sharedInstance.getShowByID("\(cell.show.id)")
-            vc.selectedImage    = cell.imgHeader.image!
-            self.searchController.active = false
+    func favChange(currentShow: Show) {
+        let id = "\(currentShow.id)"
+        if currentShow.favorite == true {
+            if DataStore.sharedInstance.favoriteShowByID(id, favorite: false) {
+                //                self.currentShow = DataStore.sharedInstance.getShowByID("\(id)")
+            }
+        } else {
+            if DataStore.sharedInstance.favoriteShowByID(id, favorite: true) {
+                //                self.currentShow = DataStore.sharedInstance.getShowByID("\(id)")
+            }
         }
     }
+    
+    // MARK: Segue
+    
+    override func prepareForSegue(segue: UIStoryboardSegue, sender: AnyObject?) {
+        let cell                = sender as! MainTableViewCell
+        let currentID           = "\(cell.show.id)"
+        if segue.identifier == "toDetail" {
+            let vc              = segue.destinationViewController as! DetailViewController
+            if !DataStore.sharedInstance.hasShowByID(currentID) {
+                DataStore.sharedInstance.createShow(cell.show)
+            }
+            self.currentShowToSegue         = DataStore.sharedInstance.getShowByID(currentID)
+            vc.currentShow                  = self.currentShowToSegue
+            vc.selectedImage                = cell.imgHeader.image!
+            self.searchController.active    = false
+        }
+    }
+    
+    // MARK: IBAction
     
     @IBAction func segAllFav(sender: UISegmentedControl) {
         switch segAllFav.selectedSegmentIndex {
@@ -325,4 +452,27 @@ class MainTableViewCell: UITableViewCell {
     @IBOutlet weak var lblSummary:  UILabel!
     
     var show: Show!
+    
+    override func layoutSubviews() {
+        super.layoutSubviews()
+        for subview in self.subviews {
+            for subview2 in subview.subviews {
+                if (String(subview2).rangeOfString("UITableViewCellActionButton") != nil) {
+                    for view in subview2.subviews {
+                        if (String(view).rangeOfString("UIButtonLabel") != nil) {
+                            if let label = view as? UILabel {
+                                       if label.text! == "\u{2605}\n   favorited" {
+                                    label.textColor = UIColor(hex: "#F1C40F")
+                                } else if label.text! == "\u{2606}\n unfavorited" {
+                                    label.textColor = UIColor.whiteColor()
+                                } else {
+                                    label.textColor = UIColor.blackColor()
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
 }

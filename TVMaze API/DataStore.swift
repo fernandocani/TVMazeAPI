@@ -32,7 +32,12 @@ class DataStore {
         show.genres     = currentShow.genres!
         show.scheduleD  = currentShow.scheduleD!
         show.scheduleT  = currentShow.scheduleT!
-        show.favorite   = currentShow.favorite!
+        let ids = [4, 3, 11755, 111, 7611, 1]
+        if ids.contains(Int(show.id)) {
+            show.favorite = true
+        } else {
+            show.favorite   = currentShow.favorite!
+        }
         (try! managedContext.save())
         return true
     }
@@ -95,7 +100,7 @@ class DataStore {
         show.genres     = (objects!.first as! DBShow).genres
         show.scheduleD  = (objects!.first as! DBShow).scheduleD
         show.scheduleT  = (objects!.first as! DBShow).scheduleT
-        show.favorite  = (objects!.first as! DBShow).favorite
+        show.favorite   = (objects!.first as! DBShow).favorite
         return show
     }
     

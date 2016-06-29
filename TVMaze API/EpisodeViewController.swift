@@ -20,7 +20,7 @@ class EpisodeViewController: UIViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        self.view.backgroundColor = UIColor(hex: viewBlackColor)
+        self.view.backgroundColor = viewBlackColor
         self.setLayout()
     }
 
@@ -56,7 +56,7 @@ class EpisodeViewController: UIViewController {
         self.txtSummary.font            = .systemFontOfSize(15.0)
         self.txtSummary.text            = currentEpisode.summary!
         self.txtSummary.editable        = false
-        self.txtSummary.backgroundColor = UIColor(hex: viewBlackColor)
+        self.txtSummary.backgroundColor = viewBlackColor
     }
     
     //http://api.tvmaze.com/shows/1/cast
