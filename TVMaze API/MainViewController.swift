@@ -35,8 +35,8 @@ class MainViewController: UIViewController, UITableViewDelegate, UITableViewData
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        self.setLayout()
 //        DataStore.sharedInstance.whipeCD()
+        self.setLayout()
         if DataStore.sharedInstance.hasShow() {
             self.populateArray()
             for show in shows {
@@ -73,10 +73,9 @@ class MainViewController: UIViewController, UITableViewDelegate, UITableViewData
                         self.favoriteShows.addObject((show2 as! Show))
                     }
                 }
-                self.tableView.reloadData()
             }
         }
-        self.updateFavorite()
+        self.updateTableView()
     }
     
     func positionForBar(bar: UIBarPositioning) -> UIBarPosition {
@@ -84,6 +83,13 @@ class MainViewController: UIViewController, UITableViewDelegate, UITableViewData
     }
     
     func setLayout() {
+        self.setLayoutSegmented()
+        self.view.backgroundColor       = viewBlackColor
+        self.tableView.backgroundColor  = UIColor.clearColor()
+        self.setLayoutSearchController()
+    }
+    
+    func setLayoutSegmented() {
         for parent in self.navigationController!.navigationBar.subviews {
             for childView in parent.subviews {
                 if (childView is UIImageView) {
@@ -101,18 +107,24 @@ class MainViewController: UIViewController, UITableViewDelegate, UITableViewData
         self.segAllFav.setTitleTextAttributes([NSForegroundColorAttributeName: UIColor.whiteColor()],   	forState: .Normal)
         self.segAllFav.setTitleTextAttributes([NSForegroundColorAttributeName: UIColor.whiteColor()],       forState: .Selected)
         self.segAllFav.setTitleTextAttributes([NSForegroundColorAttributeName: UIColor.darkGrayColor()],    forState: .Disabled)
-        
-        self.view.backgroundColor       = viewBlackColor
-        self.tableView.backgroundColor  = UIColor.clearColor()
+    }
+    
+    func setLayoutSearchController() {
         self.searchController.searchResultsUpdater = self
         self.searchController.hidesNavigationBarDuringPresentation = false
         self.searchController.dimsBackgroundDuringPresentation = false
         self.searchController.searchBar.delegate = self
         self.searchController.searchBar.searchBarStyle = .Minimal
         self.searchController.searchBar.sizeToFit()
-        (UIBarButtonItem.appearanceWhenContainedInInstancesOfClasses([UISearchBar.self])).tintColor = lightGreenColor
-
+        self.searchController.searchBar.placeholder = "Search TVShow..."
+        (UIBarButtonItem.appearanceWhenContainedInInstancesOfClasses([UISearchBar.self])).tintColor = UIColor.whiteColor()
+        (self.searchController.searchBar.valueForKey("searchField") as? UITextField)?.textColor     = UIColor.whiteColor()
+        (self.searchController.searchBar.valueForKey("searchField") as? UITextField)?.tintColor     = lightGreenColor
         self.tableView.tableHeaderView  = searchController.searchBar
+        let blurView = UIVisualEffectView(effect: UIBlurEffect(style: .Light))
+        blurView.frame = self.tableView.tableHeaderView!.bounds
+        self.tableView.tableHeaderView!.addSubview(blurView)
+        self.tableView.tableHeaderView!.sendSubviewToBack(blurView)
     }
     
     // MARK: Connection
@@ -152,7 +164,6 @@ class MainViewController: UIViewController, UITableViewDelegate, UITableViewData
                         }
                     }
                 }
-                
                 self.populateArray()
                 self.currentPageIndex = 1
             case .Failure(let error):
@@ -189,27 +200,31 @@ class MainViewController: UIViewController, UITableViewDelegate, UITableViewData
     }
     
     func searchShows(searchQuery: String) {
-        self.searching = true
-        let url = baseUrl + showsUrlSearch + searchQuery.stringByAddingPercentEncodingWithAllowedCharacters(.URLQueryAllowedCharacterSet())!
-        print(url)
-        Alamofire.request(.GET, url, encoding: .JSON).responseJSON {
-            response in switch response.result {
-            case .Success(let JSON):
-                var count = 0
-                print((JSON as! NSArray).count)
-                for show in (JSON as! NSArray) {
-                    let currentShow = self.getShowData((show as! NSDictionary).objectForKey("show") as! NSDictionary)
-                    if !(self.showsForSearch.contains { return $0.id == currentShow.id }) {
-                        self.showsForSearch.append(currentShow)
+        if self.segAllFav.selectedSegmentIndex == 0 {
+            self.searching = true
+            let url = baseUrl + showsUrlSearch + searchQuery.stringByAddingPercentEncodingWithAllowedCharacters(.URLQueryAllowedCharacterSet())!
+            print(url)
+            Alamofire.request(.GET, url, encoding: .JSON).responseJSON {
+                response in switch response.result {
+                case .Success(let JSON):
+                    var count = 0
+                    print((JSON as! NSArray).count)
+                    for show in (JSON as! NSArray) {
+                        let currentShow = self.getShowData((show as! NSDictionary).objectForKey("show") as! NSDictionary)
+                        if !(self.showsForSearch.contains { return $0.id == currentShow.id }) {
+                            self.showsForSearch.append(currentShow)
+                        }
+                        count += 1
+                        print(count)
                     }
-                    count += 1
-                    print(count)
+                    self.searching = false
+                    self.updateTableView()
+                case .Failure(let error):
+                    print("Request failed with error: \(error)")
                 }
-                self.searching = false
-                self.tableView.reloadData()
-            case .Failure(let error):
-                print("Request failed with error: \(error)")
             }
+        } else {
+            
         }
     }
     
@@ -217,9 +232,15 @@ class MainViewController: UIViewController, UITableViewDelegate, UITableViewData
     
     func populateArray() {
         shows = DataStore.sharedInstance.getShows()
-        self.tableView.reloadData()
+        self.updateTableView()
         self.tableView.scrollToRowAtIndexPath(NSIndexPath(forRow: 0, inSection: 0), atScrollPosition: .Top, animated: false)
         self.removeLoading()
+    }
+    
+    func updateTableView() {
+        self.tableView.reloadData()
+        self.updateFavorite()
+        self.tableView.reloadData()
     }
     
     func populateCell(indexPath: NSIndexPath, show: Show) -> MainTableViewCell {
@@ -247,7 +268,7 @@ class MainViewController: UIViewController, UITableViewDelegate, UITableViewData
                 if item.favorite == true {
                     cell.lblTitle.textColor = yellowColor
                 } else {
-                    cell.lblTitle.textColor = UIColor.whiteColor()
+                    cell.lblTitle.textColor = lightGreenColor
                 }
                 cell.show               = item
             }
@@ -339,7 +360,7 @@ class MainViewController: UIViewController, UITableViewDelegate, UITableViewData
                 self.tableView.deleteRowsAtIndexPaths([indexPath], withRowAnimation: UITableViewRowAnimation.Automatic)
                 self.tableView.endUpdates()
             }
-            self.updateFavorite()
+            self.updateTableView()
         })
         favAction.backgroundColor = UIColor.grayColor()
         return [favAction]
@@ -354,7 +375,7 @@ class MainViewController: UIViewController, UITableViewDelegate, UITableViewData
             }
             return show.name!.lowercaseString.containsString(searchText.lowercaseString)
         }
-        tableView.reloadData()
+        self.tableView.reloadData()
     }
     
     func searchBar(searchBar: UISearchBar, textDidChange searchText: String) {
@@ -417,7 +438,6 @@ class MainViewController: UIViewController, UITableViewDelegate, UITableViewData
             for show in shows {
                 self.showsForSearch.append(show as! Show)
             }
-            self.tableView.reloadData()
         }
     }
     
@@ -447,18 +467,17 @@ class MainViewController: UIViewController, UITableViewDelegate, UITableViewData
             for show in shows {
                 showsForSearch.append(show as! Show)
             }
-            self.tableView.reloadData()
+            self.updateTableView()
         case 1:
             self.favoriteShows = DataStore.sharedInstance.getFavoritesShow()
             showsForSearch.removeAll()
             for show in favoriteShows {
                 showsForSearch.append(show as! Show)
             }
-            self.tableView.reloadData()
+            self.updateTableView()
         default:
             break
         }
-        self.updateFavorite()
     }
 }
 
